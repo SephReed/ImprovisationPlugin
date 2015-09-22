@@ -1,4 +1,4 @@
-host.defineController("Keith McMillen Instruments", "12Step", "1.0", "A323D780-5AF5-11E4-8ED6-0800200C9A66");
+host.defineController("Keith McMillen Instruments", "12Step", "1.0", "FE086F1E-6173-11E5-9380-A8E688D887A8", "Seph Reed");
 host.defineMidiPorts(1, 1); 
 var 12StepPortNames 	= 	["12Step"];
 host.addDeviceNameBasedDiscoveryPair(12StepPortNames, 12StepPortNames);
@@ -13,46 +13,7 @@ function init()  {
 
 
 function onMidi(status, data1, data2) {
-	var isDrumRecChange = false;
-	var isLowKeysRecChange = false;
-	var isHighKeysRecChange = false;
-	var isPadNote = false;
-
-
-
-	if(isDrumRecChange)  {
-		if(drumsRecord = REC_OFF) { 
-			drumsRecord = REC_NEW;
-			host.showPopupNotification("Drum Record New Loop");
-		}
-		else if(drumsRecord = REC_NEW) { 
-			drumsRecord = REC_DUB;
-			host.showPopupNotification("Drum Record Overdub Loop");
-		}
-		else if(drumsRecord = REC_DUB) { 
-			drumsRecord = REC_OFF;
-			host.showPopupNotification("Drum Record Disengaged");
-		}
-	}
-
-	else if(isLowKeysRecChange)  {
-		if(lowKeysRecord = REC_OFF) { 
-			lowKeysRecord = REC_NEW;
-			host.showPopupNotification("Low Keys Record New Loop");
-		}
-		else if(lowKeysRecord = REC_NEW) { 
-			lowKeysRecord = REC_DUB;
-			host.showPopupNotification("Low Keys Record Overdub Loop");
-		}
-		else if(lowKeysRecord = REC_DUB) { 
-			lowKeysRecord = REC_OFF;
-			host.showPopupNotification("Low Keys Record Disengaged");
-		}
-	}
-
-	else if(isPadNote)  {
-		//send note to pad
-	}
+	println("Woo");
 
 }
 

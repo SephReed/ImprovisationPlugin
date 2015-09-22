@@ -27,7 +27,7 @@ load("DrumPage.js")
 load("ClipPage.js")
 load("ConductorPage.js")
 load("DeviceControls.js")
-load("OctaveHandler.js")
+load("MultiDeviceInterface.js")
 
 
 

@@ -36,7 +36,7 @@ load("QUNEO_init.js")
 var quneoPortNames = ["QUNEO"];
 var QUNEONoteIn;
 
-host.defineController("Keith McMillen Instruments", "QUNEO", "1.0", "A323D780-5AF5-11E4-8ED6-0800200C9A66");
+host.defineController("eImprov", "KMI QUNEO", "1.0", "A323D780-5AF5-11E4-8ED6-0800200C9A66", "Seph Reed");
 host.defineMidiPorts(1, 1); 
 host.addDeviceNameBasedDiscoveryPair(quneoPortNames, quneoPortNames);
 
