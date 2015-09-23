@@ -27,7 +27,6 @@ load("DrumPage.js")
 load("ClipPage.js")
 load("ConductorPage.js")
 load("DeviceControls.js")
-load("MultiDeviceInterface.js")
 
 
 
@@ -98,7 +97,7 @@ host.addDeviceNameBasedDiscoveryPair(quneoPortNames, quneoPortNames);
 ******************************/
 function quneoInit()  {
    //further *Quneo Host* definining
-	host.println("Quneo Initializing");
+   	host.println(QUNEO_LOAD_MSG);
 	host.getMidiInPort(0).setMidiCallback(onMidi);
 
 	// var test = host.getPreferences().getStringSetting("Engage", null, 25, "Hello World");

@@ -8,6 +8,17 @@
 
 
 
+/******************************
+*     LOADING MESSAGE
+******************************/
+var QUNEO_LOAD_MSG = 
+	"\n***~-~-~-~-~-~-~-[Initializing Quneo]-~-~-~-~-~-~-~***\n"
++	"eImprov for QUNEO and Bitwig.\n"
++	"   by Thumbz aka Seph Reed.\n\n"
++	"\"Peace is the acceptance of mutually assured destruction,\n"
++	"   and the respect of a worthy opponent.\"\n"
++	"***~-~-~-~-~-~-~-[Enjoy]-~-~-~-~-~-~-~***\n";
+
 
 /******************************
 *     THRESHOLD CONSTANTS

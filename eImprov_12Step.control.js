@@ -1,7 +1,7 @@
 loadAPI(1);
 
-load("Constants.js")
-load("MultiDeviceInterface.js")
+load("12_Step/StepConstants.js")
+load("Shared/MultiDeviceInterface.js")
 
 var StepPortNames = ["12Step Port 1"];
 
@@ -10,6 +10,7 @@ host.defineMidiPorts(1, 1);
 host.addDeviceNameBasedDiscoveryPair(StepPortNames, StepPortNames);
 
 function init()  {
+	host.println(STEP_LOAD_MSG);
 	octaveHandlerInit();
 	host.getMidiInPort(0).setMidiCallback(onMidi);
 	// host.getMidiInPort(0).setSysexCallback(onSysex);

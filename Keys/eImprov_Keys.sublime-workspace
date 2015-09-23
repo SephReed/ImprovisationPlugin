@@ -347,14 +347,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "12Step_init.js",
-			"settings":
-			{
-				"buffer_size": 1621,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -397,7 +389,7 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/ImprovisationPlugin/12_Step"
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/ImprovisationPlugin/Keys"
 	],
 	"file_history":
 	[
@@ -578,38 +570,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "12Step_init.js",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 1621,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -649,7 +611,7 @@
 		"height": 0.0
 	},
 	"pinned_build_system": "",
-	"project": "12step.sublime-project",
+	"project": "eImprov_Keys.sublime-project",
 	"replace":
 	{
 		"height": 42.0

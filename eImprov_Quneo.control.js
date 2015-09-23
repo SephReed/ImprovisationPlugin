@@ -28,7 +28,8 @@ var MAX_SCENES = 5;
 *     DEPENDENCIES:
 ******************************/
 loadAPI(1);
-load("QUNEO_init.js")
+load("Shared/MultiDeviceInterface.js")
+load("Quneo/QUNEO_init.js")
 
 /******************************
 *     QUNEO HOST DEFINITION:
