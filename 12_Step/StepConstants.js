@@ -7,8 +7,8 @@ var STEP_LOAD_MSG =
 	"\n***~-~-~-~-~-~-~-[Initializing 12 Step]-~-~-~-~-~-~-~***\n"
 +	"eImprov for 12 Step and Bitwig.\n"
 +	"   by Thumbz aka Seph Reed.\n\n"
-+	"\"Humanity is an absolute disaster.\n"
-+	"   It's saddening, and shameful.\"\n"
++	"\"Here's some bad advice:\n"
++	"   Just be yourself.\"\n"
 +	"***~-~-~-~-~-~-~-[Enjoy]-~-~-~-~-~-~-~***\n";
 
 

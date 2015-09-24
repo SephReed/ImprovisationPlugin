@@ -1,6 +1,7 @@
 loadAPI(1);
 
 load("Shared/MultiDeviceInterface.js")
+load("Keys/Keys_init.js");
 
 var KeyPortInNames = ["USB2.0-MIDI Port 1"];
 var KeyPortOutNames = ["USB2.0-MIDI Port 1", "USB2.0-MIDI Port 2"];
@@ -15,18 +16,7 @@ function init()  {
 	// host.getMidiInPort(0).setSysexCallback(onSysex);
 	noteIn = host.getMidiInPort(0).createNoteInput("eIKeys", "82????", "92????");
 	noteIn.setShouldConsumeEvents(false);
+	keysInit();
 }
 
 
-
-function onMidi(status, data1, data2) {
-	println(status+" "+data1+" "+data2);
-
-	if(status == 128) {  data2 = 0;  }
-
-	
-	data1 = data1%12;
-
-	data1 = data1 + (12*trackOctaveOffsets[0]);
-	noteIn.sendRawMidiEvent(144, data1, data2);
-}

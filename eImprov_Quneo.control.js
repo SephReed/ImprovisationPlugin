@@ -29,6 +29,7 @@ var MAX_SCENES = 5;
 ******************************/
 loadAPI(1);
 load("Shared/MultiDeviceInterface.js")
+load("Shared/BitwigConstants.js")
 load("Quneo/QUNEO_init.js")
 
 /******************************

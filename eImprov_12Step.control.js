@@ -24,8 +24,9 @@ function onMidi(status, data1, data2) {
 	println(data1+" "+data2);
 
 	if(data2 > 0)  {
-		if(data1 == OCT_UP_NOTE) {  modTrackOctave(0, 1);  }
-		else if(data1 == OCT_DOWN_NOTE) {  modTrackOctave(0, -1);  }
+		if(data1 == OCT_UP_NOTE) {  modTrackOctave(MDI_seleced_track, 1);  }
+		else if(data1 == OCT_DOWN_NOTE) {  modTrackOctave(MDI_seleced_track, -1);  }
+		else if(data1 == 48) {  MDIBank.getTrack(0).select();  }
 	}
 }
 

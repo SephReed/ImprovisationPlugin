@@ -37,7 +37,7 @@ load("DeviceControls.js")
 
 
 
-var currentPage = DRUM_PAGE;
+// var currentPage = DRUM_PAGE;
 
 
 
@@ -66,6 +66,7 @@ var diamondButton = new ModButton();  //when an *mod button is used*, it's state
 var squareButton = new ModButton();
 
 var stalledPadHits = initArray(null, 16);
+var midiOutForPad = initArray(-1, 16);
 var currentlyStallingPadHit = false;
 
 var padStates = initArray(null, 16);
@@ -114,7 +115,8 @@ function quneoInit()  {
 	
 	initializeBitwigInterface();
 	octaveHandlerInit();
-	setPage(CLIP_PAGE);
+	MDI_addPageObserver(setPage);
+	// setPage(CLIP_PAGE);
 }
 
 
@@ -299,9 +301,9 @@ function rightRotaryButtonHit() {
 
 		releaseAllHeldToggles();
 
-		if(currentPage == DRUM_PAGE) {  setPage(CLIP_PAGE);  }
-		else if(currentPage == CLIP_PAGE) {  setPage(CONDUCTOR_PAGE);  }
-		else {  setPage(DRUM_PAGE);  }
+		if(currentPage == DRUM_PAGE) {  MDI_setPage(CLIP_PAGE);  }
+		else if(currentPage == CLIP_PAGE) {  MDI_setPage(CONDUCTOR_PAGE);  }
+		else {  MDI_setPage(DRUM_PAGE);  }
 }	}
 
 //---------------------------------------------------------------------------
@@ -367,10 +369,12 @@ function tryReleasingStalledPadNotes()  {
 			for(var i = 0; i < stalledPadHits.length; i++)  {
 				if(stalledPadHits[i] != null)  {
 					// println("releasing stalled pad hit "+i);
-					sendPadHitToBitwig(i, stalledPadHits[i].velocity);
+					sendPadHitToBitwig(midiOutForPad[i], stalledPadHits[i].velocity);
 
 					if(stalledPadHits[i].impulseOnly == true)  {
-						sendPadHitToBitwig(i, 0);  }
+						sendNoteOnToBitwig(midiOutForPad[i], 0);
+						midiOutForPad[i] = -1;
+					}
 
 					stalledPadHits[i] = null;
 			}	}
@@ -400,6 +404,15 @@ function releaseAllHeldToggles()  {
 //---------------------------------------------------------------------------
 
 function sendPadHitToBitwig(padNum, velocity)  {
+
+	if(midiOutForPad[padNum] == -1) {
+		var trackIndex = topTrackInBank + selectedTrack;
+		var midiOut = trackOctaveOffsets[trackIndex] * 12;
+		if(padNum == 14)  {  midiOut += 12;  }
+		else  {  midiOut += padNum;  }
+
+		midiOutForPad[padNum] = midiOut;
+	}
 		//
 	if(pageAutoSwitch.status == RECORDING_QUEUED)  {
 		var nextMeasureWorthy = (1 - (beatPosition%1)) < BITWIG_UPDATE_LAG;  //within 1/16 of beat start
@@ -412,6 +425,7 @@ function sendPadHitToBitwig(padNum, velocity)  {
 			// releaseAllPads();
 
 			if(stalledPadHits[padNum] == null && velocity > 0)  {
+
 				stalledPadHits[padNum] = new StalledPadHit(velocity);
 				currentlyStallingPadHit = true;
 				println("note caught to be put in next measure");
@@ -423,12 +437,10 @@ function sendPadHitToBitwig(padNum, velocity)  {
 		}	}	
 	}
 
-	var trackIndex = topTrackInBank + selectedTrack;
-	var noteNum = trackOctaveOffsets[trackIndex] * 12;
-	if(padNum == 14)  {  noteNum += 12;  }
-	else  {  noteNum += padNum;  }
+	
 
-	sendNoteOnToBitwig(noteNum, velocity);
+	sendNoteOnToBitwig(midiOutForPad[padNum], velocity);
+	if(velocity == 0) {  midiOutForPad[padNum] = -1;  }
 }
 
 // //---------------------------------------------------------------------------
@@ -467,9 +479,8 @@ function sendPadHitToBitwig(padNum, velocity)  {
 
 //set page updates mostly updates the lighting
 function setPage(page)  {
-	if(page != currentPage)  {  
-		currentPage = page;
-
+	println("set page "+page);
+	// if(page != currentPage)  {  
 		clearPadLEDS();  
 
 		if(page == CLIP_PAGE) {
@@ -481,7 +492,7 @@ function setPage(page)  {
 		else if (page == CONDUCTOR_PAGE) {
 			sendMidi(176, 7, 90);   
 			showConductorPage();  }//right eye down
-}	}
+}	
 
 //---------------------------------------------------------------------------
 

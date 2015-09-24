@@ -29,12 +29,7 @@ var THRESH_PAD_MAX = 127 - PAD_CORNER_WIDTH;
 
 
 
-/******************************
-*      PAGE CONSTANTS
-******************************/
-var DRUM_PAGE = "drum page";
-var CLIP_PAGE = "clip page";
-var CONDUCTOR_PAGE = "conductor page";
+
 
 
 
@@ -148,9 +143,5 @@ var BTN_RELEASED = "btn released";
 
 
 
-
-
-
-var BITWIG_UPDATE_LAG = 1/8;  //1/4 a beat, 1/16 note.  REALLY BAD LAG.  at 128 bpm
 
 
