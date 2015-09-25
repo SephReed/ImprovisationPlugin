@@ -169,8 +169,10 @@ function createRecordingForTrack(trackNum)  {
 //this scrolls all the track banks up or down x spaces, and then moves them
 //left or right to match where they once were.  Kind of a hack.
 function moveAllTrackBanks(spaces) {
+  if(spaces == 0) { return; }
+      //
   for(var t = 0; t < 8; t++) {
-     //move bank up or down
+      //move bank up or down
     var bank = TRACK_BANKS[t];
     for(var i = 0; i < Math.abs(spaces); i++) {
       if(spaces < 0) {
@@ -181,12 +183,9 @@ function moveAllTrackBanks(spaces) {
 
      //finds the diffence in the leftmost scene position of this track vs the 
      //last track this bank once was on
-     //*buggy* 1 is a magic number
-    var dScene 
-    if(spaces > 0) {
-      dScene = trackSceneSelectPositions[topTrackInBank + t] - trackSceneSelectPositions[topTrackInBank + t + 1];  }
-    else  {
-      dScene = trackSceneSelectPositions[topTrackInBank + t] - trackSceneSelectPositions[topTrackInBank + t - 1];  }
+    var trackIndex = MDI_liveBankPosition + t;
+    var dScene = trackSceneSelectPositions[trackIndex] - trackSceneSelectPositions[trackIndex + spaces];
+    
 
      //scrolls the scenes until the diffence is muted
     for(var i = 0; i < Math.abs(dScene); i++) {

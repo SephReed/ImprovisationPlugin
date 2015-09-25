@@ -7,8 +7,8 @@ var STEP_LOAD_MSG =
 	"\n***~-~-~-~-~-~-~-[Initializing 12 Step]-~-~-~-~-~-~-~***\n"
 +	"eImprov for 12 Step and Bitwig.\n"
 +	"   by Thumbz aka Seph Reed.\n\n"
-+	"\"Here's some bad advice:\n"
-+	"   Just be yourself.\"\n"
++	"\"Everything was beautiful,\n"
++	"   and nothing hurt.\"\n"
 +	"***~-~-~-~-~-~-~-[Enjoy]-~-~-~-~-~-~-~***\n";
 
 
@@ -18,5 +18,7 @@ var STEP_LOAD_MSG =
 /******************************
 *      NOTE CONSTANTS
 ******************************/
-var OCT_DOWN_NOTE = 51;
-var OCT_UP_NOTE = 54;
+var OCT_DOWN_NOTE = 56;
+var OCT_UP_NOTE = 58;
+var MODE_CHANGE = 54;
+var NUM_BTNS = [48, 50, 52, 53, 55, 57, 59, 60];

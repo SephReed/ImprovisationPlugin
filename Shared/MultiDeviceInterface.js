@@ -7,19 +7,23 @@ load("MDI_Constants.js");
 
 var currentPage;
 
-var masterName = null;
+var masterTrackName = null;
 var trackNames = initArray(0, SUPER_BANK_MAX_TRACKS);
 var trackOctaveOffsets = initArray(3, SUPER_BANK_MAX_TRACKS);
 
 var MDI_seleced_track = 0;
+var MDI_liveBankPosition = 0;
 var MDIBank;
 var MDI_master_track;
+
+var availableTracks = 0;
+
 var onPageChange = null;
+var onLiveBankPositionChange = null;
+
 
 
 function octaveHandlerInit()  {
-    
-
     MDIBank = host.createTrackBank(SUPER_BANK_MAX_TRACKS, 0, 1);
 
     for(var t = 0; t < SUPER_BANK_MAX_TRACKS; t++)  {
@@ -34,39 +38,13 @@ function octaveHandlerInit()  {
 }
 
 
-function MDI_addPageObserver(i_onPageChange) {
-    onPageChange = i_onPageChange;
-}
 
 
 
 
-
-function createNameObserver(trackIndex)  {
-    return function(name)  {
-        if(name == NOT_YET_NAMED)  { return; }
-
-        trackNames[trackIndex] = name;
-
-        
-        var index = name.indexOf(OCTAVE_TAG);
-        // println("index of tag "+OCTAVE_TAG+" in "+name+": "+index);
-        if(index != -1)  {
-            var splice = name.substr(index+OCTAVE_TAG.length, 2);
-            if(splice.charAt(0) == '0') {  splice = splice.substr(1, 1); }
-    
-            var octave = parseInt(splice);
-            if(octave != trackOctaveOffsets[trackIndex]) {
-                println("Loading Track#"+trackIndex+" Octave from: "+name);
-                setTrackOctave(trackIndex, octave);  }
-        }   
-        else {
-            trackOctaveOffsets[trackIndex] == 3;
-            updateTrackTitleOctave(trackIndex);
-        }   
-    
-    };
-}
+/******************************
+*     OCTAVE CHANGE 
+******************************/
 
 function modTrackOctave(trackIndex, numOctaves)  {
     setTrackOctave(trackIndex, trackOctaveOffsets[trackIndex] + numOctaves);
@@ -97,13 +75,101 @@ function setTrackOctave(trackIndex, octave)  {
 
     println("Track#"+ trackIndex+" set Oct: "+octave);
 }
+
+
+
+
+
+/******************************
+*     PAGE CHANGE 
+******************************/
+
+function MDI_addPageObserver(i_onPageChange) {
+    onPageChange = i_onPageChange;
+}
+
+
+function MDI_setPage(i_page)  {
+    if(currentPage == i_page) { return; }
+
+    currentPage = i_page;
+    if(onPageChange != null) {  onPageChange(currentPage);  }
+    updateMasterTitlePage(PAGE_TAG);
+}
+
+
+
+
+
+
+/******************************
+*     SCENE BANK SCROLL
+******************************/
+
+function MDI_addLiveBankPositionObserver(i_onLiveBankPositionChange) {
+    onLiveBankPositionChange = i_onLiveBankPositionChange;
+}
+
+function modLiveBankPosition(numSteps)  {
+    if(numSteps == 0)  {  return;  }
+    else if (numSteps > 0)  {
+        var spacesLeft = availableTracks - (LIVE_BANK_HEIGHT + MDI_liveBankPosition);
+        numSteps = Math.min(numSteps, spacesLeft);
+        MDI_liveBankPosition = MDI_liveBankPosition + numSteps;
+        if(onLiveBankPositionChange != null) 
+        {  onLiveBankPositionChange(numSteps);  }
+    }
+    else if (numSteps < 0)  {
+        numSteps = Math.abs(numSteps);
+        numSteps = Math.min(numSteps, MDI_liveBankPosition);
+        if(numSteps > 0) {
+            MDI_liveBankPosition = MDI_liveBankPosition - numSteps;
+            if(onLiveBankPositionChange != null) 
+            {  onLiveBankPositionChange(-1*numSteps);  }
+        }
+    }
+
+    updateMasterTitlePage(LIVE_BANK_POS_TAG);
+}
+
+
+
  
 
 
 
 
+/******************************
+*      OBSERVERS 
+******************************/
 
+function createNameObserver(trackIndex)  {
+    return function(name)  {
+        if(name == NOT_YET_NAMED)  { return; }
 
+        availableTracks = Math.max(availableTracks, trackIndex);
+
+        trackNames[trackIndex] = name;
+
+        
+        var index = name.indexOf(OCTAVE_TAG);
+        // println("index of tag "+OCTAVE_TAG+" in "+name+": "+index);
+        if(index != -1)  {
+            var splice = name.substr(index+OCTAVE_TAG.length, 2);
+            if(splice.charAt(0) == '0') {  splice = splice.substr(1, 1); }
+    
+            var octave = parseInt(splice);
+            if(octave != trackOctaveOffsets[trackIndex]) {
+                println("Loading Track#"+trackIndex+" Octave from: "+name);
+                setTrackOctave(trackIndex, octave);  }
+        }   
+        else {
+            trackOctaveOffsets[trackIndex] == 3;
+            updateTrackTitleOctave(trackIndex);
+        }   
+    
+    };
+}
 
 
 
@@ -121,7 +187,7 @@ function createMasterNameObserver()  {
     return function(name)  {
         if(name == NOT_YET_NAMED) { return; }
 
-        masterName = name;
+        masterTrackName = name;
 
         var index = name.indexOf(PAGE_TAG);
         if(index != -1)  {
@@ -135,24 +201,43 @@ function createMasterNameObserver()  {
                     if(onPageChange != null) {  onPageChange(currentPage);  }
                 }      
                 else { MDI_setPage(CLIP_PAGE);  }
-        }   }
+            }
+        }
+
+        var index = name.indexOf(LIVE_BANK_POS_TAG);
+        if(index != -1)  {
+            var splice = name.substr(index+LIVE_BANK_POS_TAG.length, 3);
+
+            //HORRID CODE
+            if(splice.charAt(0) == '0') {  
+                splice = splice.substr(1, 2); 
+                if(splice.charAt(0) == '0') {  splice = splice.substr(1, 1); }
+            }
+
+            var liveBankPos = parseInt(splice);
+            if(liveBankPos != MDI_liveBankPosition) {
+                modLiveBankPosition(liveBankPos-MDI_liveBankPosition);  }
+        }   
 }   }
 
-function MDI_setPage(i_page)  {
-    if(currentPage == i_page) { return; }
-
-    currentPage = i_page;
-    if(onPageChange != null) {  onPageChange(currentPage);  }
-    updateMasterTitlePage();
-}
 
 
-function updateMasterTitlePage()  {
+
+function updateMasterTitlePage(tagToUpdate)  {
     if(masterName != null)  {
-        name = masterName;
-        var index = name.indexOf(PAGE_TAG);
-        if(index != -1)  {  name = name.replace( /(#Page:[A-Z]{3})/, PAGE_TAG+currentPage);  }
-        else {  name = name+PAGE_TAG+currentPage;  }
+        name = masterTrackName;
+
+        if(tagToUpdate == PAGE_TAG) {
+            var index = name.indexOf(PAGE_TAG);
+            if(index != -1)  {  name = name.replace( /(#Page:[A-Z]{3})/, PAGE_TAG+currentPage);  }
+            else {  name = name+PAGE_TAG+currentPage;  }
+        }
+
+        if(tagToUpdate == LIVE_BANK_POS_TAG) {
+            var index = name.indexOf(LIVE_BANK_POS_TAG);
+            if(index != -1)  {  name = name.replace( /(#LPos:\d{3})/, LIVE_BANK_POS_TAG+MDI_liveBankPosition);  }
+            else {  name = name+LIVE_BANK_POS_TAG+MDI_liveBankPosition;  }
+        }        
 
         println("Update Master Name: "+name);
         MDI_master_track.setName(name);

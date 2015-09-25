@@ -44,12 +44,10 @@ function tryAsDrumButtonData(data1, data2)  {
 	if(currentPage != DRUM_PAGE)  {  return false;  }
 
    	if(data1 == VERT_ARROW_1_DOWN && data2 != 0)  {
-		var trackIndex = topTrackInBank + selectedTrack;
-		modTrackOctave(trackIndex, -1);
+		modTrackOctave(MDI_seleced_track, -1);
 	}
 	else if(data1 == VERT_ARROW_1_UP && data2 != 0)  {
-		var trackIndex = topTrackInBank + selectedTrack;
-		modTrackOctave(trackIndex, 1);
+		modTrackOctave(MDI_seleced_track, 1);
 	}
 		//
 	return true;

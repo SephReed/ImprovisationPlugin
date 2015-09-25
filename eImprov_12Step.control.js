@@ -1,6 +1,8 @@
 loadAPI(1);
 
 load("12_Step/StepConstants.js")
+load("12_Step/12Step_init.js")
+load("Shared/BitwigConstants.js")
 load("Shared/MultiDeviceInterface.js")
 
 var StepPortNames = ["12Step Port 1"];
@@ -16,21 +18,8 @@ function init()  {
 	// host.getMidiInPort(0).setSysexCallback(onSysex);
 	noteIn = host.getMidiInPort(0).createNoteInput("12Step", "82????", "92????");
 	noteIn.setShouldConsumeEvents(false);
+	stepInit();
 }
-
-
-
-function onMidi(status, data1, data2) {
-	println(data1+" "+data2);
-
-	if(data2 > 0)  {
-		if(data1 == OCT_UP_NOTE) {  modTrackOctave(MDI_seleced_track, 1);  }
-		else if(data1 == OCT_DOWN_NOTE) {  modTrackOctave(MDI_seleced_track, -1);  }
-		else if(data1 == 48) {  MDIBank.getTrack(0).select();  }
-	}
-}
-
-
 
 
 

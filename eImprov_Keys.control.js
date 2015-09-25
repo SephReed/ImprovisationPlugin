@@ -1,5 +1,6 @@
 loadAPI(1);
 
+load("Shared/BitwigConstants.js")
 load("Shared/MultiDeviceInterface.js")
 load("Keys/Keys_init.js");
 

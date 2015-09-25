@@ -50,7 +50,6 @@ var pageAutoSwitch = new CurrentlyRecording(-1, -1);
 pageAutoSwitch.status = RECORDING_CLOSED;
 
 var selectedTrack = 0;
-var topTrackInBank = 0;
 
 
 
@@ -406,7 +405,7 @@ function releaseAllHeldToggles()  {
 function sendPadHitToBitwig(padNum, velocity)  {
 
 	if(midiOutForPad[padNum] == -1) {
-		var trackIndex = topTrackInBank + selectedTrack;
+		var trackIndex = MDI_liveBankPosition + selectedTrack;
 		var midiOut = trackOctaveOffsets[trackIndex] * 12;
 		if(padNum == 14)  {  midiOut += 12;  }
 		else  {  midiOut += padNum;  }
@@ -516,8 +515,7 @@ function selectTrackFromBank(trackNum)  {
 //---------------------------------------------------------------------------
 
 //the track bank used here is a hack due to a glitch in Bitwig
-//having multiple track banks of one track does can be done, but all track track selections
-//are based off of some magic number that says "this is the bottom".
+//having multiple track banks of one track can't be done.
 //I expect this *code to break*
 function getTrackFromBank(trackNum)  
 {	return TRACK_BANKS[trackNum].getTrack(trackNum);  }

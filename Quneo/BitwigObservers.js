@@ -2,6 +2,8 @@
 //For the most part, this just creates observers which you can find
 //at them bottom of the page labeled as *initialization helpers*
 function initializeBitwigObservers()  {
+  MDI_addLiveBankPositionObserver(moveAllTrackBanks);
+
 	for (var t = 0; t < MAX_TRACKS; t++)
 	{
 		var track = TRACK_BANKS[t].getTrack(t);
