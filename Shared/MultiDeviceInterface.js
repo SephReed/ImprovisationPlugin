@@ -236,7 +236,12 @@ function updateMasterTitlePage(tagToUpdate)  {
         if(tagToUpdate == LIVE_BANK_POS_TAG) {
             var index = name.indexOf(LIVE_BANK_POS_TAG);
             if(index != -1)  {  name = name.replace( /(#LPos:\d{3})/, LIVE_BANK_POS_TAG+MDI_liveBankPosition);  }
-            else {  name = name+LIVE_BANK_POS_TAG+MDI_liveBankPosition;  }
+            else {
+                var txt = MDI_liveBankPosition;
+                if(MDI_liveBankPosition < 10) {  txt = "00"+txt;  }
+                else if(MDI_liveBankPosition < 100) {  txt = "0"+txt;  }
+                name = name+LIVE_BANK_POS_TAG+txt;  
+            }
         }        
 
         println("Update Master Name: "+name);
