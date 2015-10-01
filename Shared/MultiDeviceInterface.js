@@ -34,7 +34,7 @@ function octaveHandlerInit()  {
     }
 
     MDI_master_track = host.createMasterTrack(0);
-    MDI_master_track.addNameObserver(256, NOT_YET_NAMED, createMasterNameObserver());
+    MDI_master_track.addNameObserver(256, NOT_YET_NAMED, createMasterTrackNameObserver());
 }
 
 
@@ -113,7 +113,7 @@ function MDI_addLiveBankPositionObserver(i_onLiveBankPositionChange) {
 function modLiveBankPosition(numSteps)  {
     if(numSteps == 0)  {  return;  }
     else if (numSteps > 0)  {
-        var spacesLeft = availableTracks - (LIVE_BANK_HEIGHT + MDI_liveBankPosition);
+        var spacesLeft = (availableTracks + 1) - (LIVE_BANK_HEIGHT + MDI_liveBankPosition);
         numSteps = Math.min(numSteps, spacesLeft);
         MDI_liveBankPosition = MDI_liveBankPosition + numSteps;
         if(onLiveBankPositionChange != null) 
@@ -183,7 +183,7 @@ function createSelectObserver(track)  {
 }   }   }
 
 
-function createMasterNameObserver()  {
+function createMasterTrackNameObserver()  {
     return function(name)  {
         if(name == NOT_YET_NAMED) { return; }
 
@@ -224,7 +224,7 @@ function createMasterNameObserver()  {
 
 
 function updateMasterTitlePage(tagToUpdate)  {
-    if(masterName != null)  {
+    if(masterTrackName != null)  {
         name = masterTrackName;
 
         if(tagToUpdate == PAGE_TAG) {
@@ -234,14 +234,13 @@ function updateMasterTitlePage(tagToUpdate)  {
         }
 
         if(tagToUpdate == LIVE_BANK_POS_TAG) {
+            var txt = MDI_liveBankPosition;
+            if(MDI_liveBankPosition < 10) {  txt = "00"+txt;  }
+            else if(MDI_liveBankPosition < 100) {  txt = "0"+txt;  }
+
             var index = name.indexOf(LIVE_BANK_POS_TAG);
-            if(index != -1)  {  name = name.replace( /(#LPos:\d{3})/, LIVE_BANK_POS_TAG+MDI_liveBankPosition);  }
-            else {
-                var txt = MDI_liveBankPosition;
-                if(MDI_liveBankPosition < 10) {  txt = "00"+txt;  }
-                else if(MDI_liveBankPosition < 100) {  txt = "0"+txt;  }
-                name = name+LIVE_BANK_POS_TAG+txt;  
-            }
+            if(index != -1)  {  name = name.replace( /(#LPos:\d{3})/, LIVE_BANK_POS_TAG+txt);  }
+            else {  name = name+LIVE_BANK_POS_TAG+txt;  }
         }        
 
         println("Update Master Name: "+name);

@@ -1,9 +1,10 @@
 loadAPI(1);
 
-load("12_Step/StepConstants.js")
-load("12_Step/12Step_init.js")
+
 load("Shared/BitwigConstants.js")
 load("Shared/MultiDeviceInterface.js")
+load("12_Step/StepConstants.js")
+load("12_Step/12Step_init.js")
 
 var StepPortNames = ["12Step Port 1"];
 

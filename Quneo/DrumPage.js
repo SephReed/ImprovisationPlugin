@@ -274,7 +274,7 @@ function drumPageUpdateVU(trackNum)  {
 function drumPageUpdateSoloLED(trackNum)  {
 	if(selectedTrack == trackNum)  {
 		var color = LIGHT_GREEN;
-		if(trackSolos[trackNum].status == true) {  color = YELLOW;  }
+		if(trackSolos[trackNum] != null && trackSolos[trackNum].status == true) {  color = YELLOW;  }
 
 		setPadLEDFromXY(6, 6, color);
 		setPadLEDFromXY(7, 6, color);
