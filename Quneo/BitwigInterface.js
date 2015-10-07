@@ -5,7 +5,7 @@ load("BitwigObservers.js")
 *   TRACK DATA STORAGE:
 *  used for quneo display
 ******************************/
-var trackSceneSelectPositions = initArray(0, 127);
+var trackSceneSelectPositions = initArray(0, SUPER_BANK_MAX_TRACKS);
 var trackSolos = initArray(0, LIVE_BANK_HEIGHT);
 var trackMutes = initArray(0, LIVE_BANK_HEIGHT);
 var trackRecs = initArray(0, LIVE_BANK_HEIGHT);

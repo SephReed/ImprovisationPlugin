@@ -280,30 +280,34 @@ function rightRotaryButtonHit() {
 	if(squareButton.held == true)  {  
 		squareButton.numUses++;
 		application.redo();  }
+	else {
+		MDI_hitRightRecButton();
+	}
 
    //while a recording is happening, this closes the recording and if there is a next track
    //in line for recording, this qeues it.
-	else if(pageAutoSwitch.status == RECORDING_NOW) {
-		var track = pageAutoSwitch.track;
-		var scene = pageAutoSwitch.scene;
-		pageAutoSwitch.status = RECORDING_CLOSED;
-		MDI_liveBank[track].getChannel(track).getClipLauncher().launch(scene);
+	// else if(pageAutoSwitch.status == RECORDING_NOW) {
+	// 	var track = pageAutoSwitch.track;
+	// 	var scene = pageAutoSwitch.scene;
+	// 	pageAutoSwitch.status = RECORDING_CLOSED;
+	// 	MDI_liveBank[track].getChannel(track).getClipLauncher().launch(scene);
 
-		nextTrack = pageAutoSwitch.nextTrack;
-		if(nextTrack != -1)  {
-			createRecordingForLiveTrack(nextTrack);  }
-	}
+	// 	nextTrack = pageAutoSwitch.nextTrack;
+	// 	if(nextTrack != -1)  {
+	// 		createRecordingForLiveTrack(nextTrack);  }
+	// }
 
    //otherwise, this switchs the page from drum page to clip.
-	else {
-		pageAutoSwitch.status = RECORDING_OFF;  //*bad code*
+	// else {
+	// 	pageAutoSwitch.status = RECORDING_OFF;  //*bad code*
 
-		releaseAllHeldToggles();
+	// 	releaseAllHeldToggles();
 
-		if(currentPage == DRUM_PAGE) {  MDI_setPage(CLIP_PAGE);  }
-		else if(currentPage == CLIP_PAGE) {  MDI_setPage(CONDUCTOR_PAGE);  }
-		else {  MDI_setPage(DRUM_PAGE);  }
-}	}
+	// 	if(currentPage == DRUM_PAGE) {  MDI_setPage(CLIP_PAGE);  }
+	// 	else if(currentPage == CLIP_PAGE) {  MDI_setPage(CONDUCTOR_PAGE);  }
+	// 	else {  MDI_setPage(DRUM_PAGE);  }
+	// }	
+}
 
 //---------------------------------------------------------------------------
 
@@ -312,24 +316,27 @@ function leftRotaryButtonHit()  {
 	if(squareButton.held == true)  {  
 		squareButton.numUses++;
 		application.undo();  }
+	else {
+		MDI_hitLeftRecButton();
+	}
 
    //if clip page is unavailable to start a recording, this can be used
-	else if(pageAutoSwitch.status == RECORDING_OFF)  {  
-		createRecordingForCurrentLiveTrack();  }
+	// else if(pageAutoSwitch.status == RECORDING_OFF)  {  
+	// 	createRecordingForCurrentLiveTrack();  }
 	
    //if this is not already in recording retry mode, start it.
    //recording retry deletes the current recording and starts a new one.
    //I'm rather proud of this bit.  It feels really natural when you're playing.
-	else if(pageAutoSwitch.status != RECORDING_RETRY) {
-		var track = pageAutoSwitch.track;
-		var scene = pageAutoSwitch.scene;
-		var clipLauncher = MDI_liveBank[track].getChannel(track).getClipLauncher();
-		//disfunctional.  Delete's things that aren't the clip often.
-		removeClip(track, scene);
+	// else if(pageAutoSwitch.status != RECORDING_RETRY) {
+	// 	var track = pageAutoSwitch.track;
+	// 	var scene = pageAutoSwitch.scene;
+	// 	var clipLauncher = MDI_liveBank[track].getChannel(track).getClipLauncher();
+	// 	//disfunctional.  Delete's things that aren't the clip often.
+	// 	removeClip(track, scene);
 
-		pageAutoSwitch.status = RECORDING_RETRY;
-		hitClip(track, scene);
-	}
+	// 	pageAutoSwitch.status = RECORDING_RETRY;
+	// 	hitClip(track, scene);
+	// }
 	
    //this can be used for tap tempo from the clip page
 	// else if (currentPage == CLIP_PAGE) {  transport.tapTempo();  }
@@ -685,7 +692,8 @@ function updateQuneoToBeatTime() {
 
 // at the end of a recording, all note's go off.  Unfortunately
 function checkForEndOfRecordingMeasure()  {
-	if(pageAutoSwitch.status == RECORDING_QUEUED)  {
+	// if(pageAutoSwitch.status == RECORDING_QUEUED)  {
+	if(recStatus.queuedTrack != -1)  {
 		var tillEndOfMeasure = (4 - (beatPosition%4));
 		var atEndOfMeasure =  tillEndOfMeasure < BITWIG_UPDATE_LAG;  //within 1/16 of end of measure
 		if(atEndOfMeasure)  {
@@ -717,7 +725,8 @@ function updateEyesAndTriangleToBeatTime() {
 	sendMidi(144, 35, playButton);
 
    //when a recording is in process, the spinners show the measure position.  rec button blinks.
-	if(pageAutoSwitch.status != RECORDING_OFF) {
+	// if(pageAutoSwitch.status != RECORDING_OFF) {
+	if(recStatus.recTrack != -1 || recStatus.queuedTrack != -1)  {
 		var recBut = (4*value)%127;
 		if(recBut < 100) { recBut = 0;  }
 		sendMidi(144, 33, recBut);

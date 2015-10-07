@@ -16,7 +16,7 @@ function initializeBitwigObservers()  {
 
 		var clipLauncher = track.getClipLauncher();
 		clipLauncher.setIndication(true);
-		// clipLauncher.addHasContentObserver(createGridObserver(t, HAS_CONTENT));
+		clipLauncher.addHasContentObserver(createHasContentObserver(t));
   	clipLauncher.addIsPlayingObserver(createGridObserver(t, IS_PLAYING));
   	clipLauncher.addIsRecordingObserver(createRecordingObserver(t));
   	clipLauncher.addIsQueuedObserver(createQeuedObserver(t));
@@ -86,6 +86,16 @@ function createGridObserver(track, statusBank)  {
    		statusBank[index] = statusEngaged;
    		updateClipLED(index);
 }	}
+
+//---------------------------------------------------------------------------
+
+function createHasContentObserver(track)  {
+    return function(scene, statusEngaged)  {
+      var index = (track*LIVE_BANK_WIDTH)+scene;
+      
+      // statusBank[index] = statusEngaged;
+      updateClipLED(index);
+} }
 
 //---------------------------------------------------------------------------
 
