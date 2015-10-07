@@ -22,8 +22,8 @@
 // var macroPages = initArray(0, MAX_TRACKS * 4);
 // var selectedTrack = 0;
 
-var volumeSlides = [];
-var hasVolumeSlide = initArray(false, MAX_TRACKS);
+// var volumeSlides = [];
+// var hasVolumeSlide = initArray(false, LIVE_BANK_HEIGHT);
 
 
 

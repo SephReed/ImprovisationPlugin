@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"L",
+				"LIVE_BANK_HEIGHT	(num)"
+			],
+			[
+				"LIV",
+				"LIVE_BANK_WIDTH	(num)"
+			],
+			[
+				"ST",
+				"STATUS_NOTE_ON	(num)"
+			],
+			[
 				"live",
 				"MDI_liveBankPosition"
 			],
@@ -425,26 +437,30 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov"
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/12_Step",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Keys",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Shared"
 	],
 	"file_history":
 	[
 		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Shared/MDI_Constants.js",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/ClipPage.js",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/QUNEO_init.js",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/BitwigInterface.js",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/eImprov_Quneo.control.js",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Shared/MultiDeviceInterface.js",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/BitwigObservers.js",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/QuneoConstants.js",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Shared/BitwigConstants.js",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/eImprov_12Step.control.js",
+		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/12_Step/12Step_init.js",
 		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/HelperClasses.js",
 		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/DrumPage.js",
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Shared/MultiDeviceInterface.js",
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/12_Step/12Step_init.js",
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/ClipPage.js",
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/BitwigInterface.js",
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/QUNEO_init.js",
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/BitwigObservers.js",
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Shared/BitwigConstants.js",
 		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Keys/Keys_init.js",
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/eImprov_12Step.control.js",
 		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/eImprov_Keys.control.js",
 		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/12_Step/StepConstants.js",
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/Quneo/QuneoConstants.js",
-		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/eImprov/eImprov_Quneo.control.js",
 		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/ImprovisationPlugin/Keys/MultiDeviceInterface.js",
 		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/ImprovisationPlugin/12_Step/eImprov_Keys.control.js",
 		"/Users/sjaromin/Documents/Bitwig Studio/Controller Scripts/ImprovisationPlugin/Quneo/OctaveHandler.js",
@@ -560,7 +576,7 @@
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -575,6 +591,11 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"totalSc",
+			"numT",
+			"TRACK_BANKS",
+			"MAX_TRACKS",
+			"MDIBank",
 			"masterName",
 			"update",
 			"topTrackInBank",
@@ -627,6 +648,9 @@
 		"regex": false,
 		"replace_history":
 		[
+			"MDI_liveBank",
+			"LIVE_BANK_HEIGHT",
+			"MDI_superBank",
 			"masterTrackName",
 			"MDI_liveBankPosition",
 			"MDI_liveBankPos",
@@ -689,7 +713,7 @@
 	"project": "eImprov.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 64.0
 	},
 	"save_all_on_build": true,
 	"select_file":

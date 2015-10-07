@@ -17,8 +17,7 @@
 /******************************
 *     VARIABLES
 ******************************/
-var totalScenesAvailable = 8;   //todo, see if -1 works
-var numTracksArmed = 0;
+
 
 
 
@@ -112,7 +111,7 @@ function tryAsClipButtonData(data1, data2)  {
 
 //calls various led functions to until all corners on all pads are updated
 function showClipPage() {
-	for(var i = 0; i < numScenes; i++) {
+	for(var i = 0; i < LIVE_BANK_TOTAL_SCENES; i++) {
 		updateClipLED(i);   }
 
 	for(var t = 0; t < 8; t++) {

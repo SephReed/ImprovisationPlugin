@@ -105,7 +105,7 @@ function quneoInit()  {
 	QUNEONoteIn = host.getMidiInPort(0).createNoteInput("QUNEO", "82????", "92????");
 	QUNEONoteIn.setShouldConsumeEvents(false);
 
-	for(var i = 0; i < MAX_TRACKS; i++){
+	for(var i = 0; i < LIVE_BANK_HEIGHT; i++){
 		trackSolos[i] = new ToggleableButton(i, TGL_BTN_SOLO);
 		trackMutes[i] = new ToggleableButton(i, TGL_BTN_MUTE);  }
 
@@ -287,11 +287,11 @@ function rightRotaryButtonHit() {
 		var track = pageAutoSwitch.track;
 		var scene = pageAutoSwitch.scene;
 		pageAutoSwitch.status = RECORDING_CLOSED;
-		TRACK_BANKS[track].getChannel(track).getClipLauncher().launch(scene);
+		MDI_liveBank[track].getChannel(track).getClipLauncher().launch(scene);
 
 		nextTrack = pageAutoSwitch.nextTrack;
 		if(nextTrack != -1)  {
-			createRecordingForTrack(nextTrack);  }
+			createRecordingForLiveTrack(nextTrack);  }
 	}
 
    //otherwise, this switchs the page from drum page to clip.
@@ -315,7 +315,7 @@ function leftRotaryButtonHit()  {
 
    //if clip page is unavailable to start a recording, this can be used
 	else if(pageAutoSwitch.status == RECORDING_OFF)  {  
-		createRecordingForCurrentTrack();  }
+		createRecordingForCurrentLiveTrack();  }
 	
    //if this is not already in recording retry mode, start it.
    //recording retry deletes the current recording and starts a new one.
@@ -323,7 +323,8 @@ function leftRotaryButtonHit()  {
 	else if(pageAutoSwitch.status != RECORDING_RETRY) {
 		var track = pageAutoSwitch.track;
 		var scene = pageAutoSwitch.scene;
-		var clipLauncher = TRACK_BANKS[track].getChannel(track).getClipLauncher();
+		var clipLauncher = MDI_liveBank[track].getChannel(track).getClipLauncher();
+		//disfunctional.  Delete's things that aren't the clip often.
 		removeClip(track, scene);
 
 		pageAutoSwitch.status = RECORDING_RETRY;
@@ -501,7 +502,7 @@ function selectTrackFromBank(trackNum)  {
 		trackSolos[selectedTrack].setHeld(false);  }
 
 	selectedTrack = trackNum;  
-	armSingleTrack(trackNum);
+	armSingleLiveTrack(trackNum);
 		//
 	println("select track from bank "+trackNum);
 	getTrackFromBank(trackNum).select();
@@ -518,7 +519,7 @@ function selectTrackFromBank(trackNum)  {
 //having multiple track banks of one track can't be done.
 //I expect this *code to break*
 function getTrackFromBank(trackNum)  
-{	return TRACK_BANKS[trackNum].getTrack(trackNum);  }
+{	return MDI_liveBank[trackNum].getTrack(trackNum);  }
 
 //---------------------------------------------------------------------------
 
@@ -695,7 +696,7 @@ function checkForEndOfRecordingMeasure()  {
 			// }
 			if (pageAutoSwitch.nextTrack != -1)  {
 				println("early arm");
-				armSingleTrack(pageAutoSwitch.nextTrack);
+				armSingleLiveTrack(pageAutoSwitch.nextTrack);
 			}
 
 		}

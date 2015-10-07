@@ -15,12 +15,10 @@
 /******************************
 *      MAX LIMIT CONSTANTS:
 ******************************/
-// var MAX_TRACKS = 128;
-var MAX_TRACKS = 8;
-var MAX_MODABLE_SENDS = 9;
-var MAX_MODABLE_MACROS = 8;
-var MAX_DEVICES = 1;
-var MAX_SCENES = 5;
+// var LIVE_BANK_HEIGHT = 128;
+// var LIVE_BANK_HEIGHT = 8;
+
+// var MAX_SCENES = 5;
 
 
 
@@ -53,7 +51,7 @@ host.addDeviceNameBasedDiscoveryPair(quneoPortNames, quneoPortNames);
 var currentlyPlaying = false;
 var beatPosition = 0;
 var application = null;
-var TRACK_BANKS = [];
+// var TRACK_BANKS = [];
 // var allSeeingTrackBank;
 // var TRACK_DEVICE_CURSORS = [];
 
@@ -68,13 +66,13 @@ function init() {
 
 	transport = host.createTransport();
 
-	for(var i = 0; i < MAX_TRACKS; i++) {
-		TRACK_BANKS[i] = host.createTrackBank(MAX_TRACKS, MAX_MODABLE_SENDS, MAX_SCENES);
-		for(var i_s = 0; i_s < i; i_s++) 
-		{	TRACK_BANKS[i].scrollScenesDown();  }
-	}
-	
-	// allSeeingTrackBank = host.createTrackBank(MAX_TRACKS, MODABLE_SENDS, 1);
+	MDI_initializeLiveBank();
+	MDI_initializeRecordingFunctionality();
+	// for(var i = 0; i < LIVE_BANK_HEIGHT; i++) {
+	// 	TRACK_BANKS[i] = host.createTrackBank(LIVE_BANK_HEIGHT, MAX_MODABLE_SENDS, MAX_SCENES);
+	// 	for(var i_s = 0; i_s < i; i_s++) 
+	// 	{	TRACK_BANKS[i].scrollScenesDown();  }
+	// }
 
    //add observers for updating *shared variables*
 	transport.getTempo().addValueObserver(777, function(i_tempo){

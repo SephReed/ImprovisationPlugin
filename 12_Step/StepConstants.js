@@ -18,6 +18,8 @@ var STEP_LOAD_MSG =
 /******************************
 *      NOTE CONSTANTS
 ******************************/
+var REC_BTN_LEFT = 49;
+var REC_BTN_RIGHT = 51;
 var OCT_DOWN_NOTE = 56;
 var OCT_UP_NOTE = 58;
 var MODE_CHANGE = 54;

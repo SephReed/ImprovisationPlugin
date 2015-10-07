@@ -4,19 +4,19 @@
 function initializeBitwigObservers()  {
   MDI_addLiveBankPositionObserver(moveAllTrackBanks);
 
-	for (var t = 0; t < MAX_TRACKS; t++)
+	for (var t = 0; t < LIVE_BANK_HEIGHT; t++)
 	{
-		var track = TRACK_BANKS[t].getTrack(t);
+		var track = MDI_liveBank[t].getTrack(t);
     track.addVuMeterObserver(128, -1, true, createVuMeterObserver(t));
     track.getSolo().addValueObserver(createSoloObserver(t));
     track.getMute().addValueObserver(createMuteObserver(t));
-    track.getArm().addValueObserver(createArmObserver(t));
+    // track.getArm().addValueObserver(createArmObserver(t));
     track.addIsSelectedInEditorObserver(createSelectObserver(t));
     track.getVolume().addValueObserver(127, createVolumeObserver(t)); 
 
 		var clipLauncher = track.getClipLauncher();
 		clipLauncher.setIndication(true);
-		clipLauncher.addHasContentObserver(createGridObserver(t, HAS_CONTENT));
+		// clipLauncher.addHasContentObserver(createGridObserver(t, HAS_CONTENT));
   	clipLauncher.addIsPlayingObserver(createGridObserver(t, IS_PLAYING));
   	clipLauncher.addIsRecordingObserver(createRecordingObserver(t));
   	clipLauncher.addIsQueuedObserver(createQeuedObserver(t));
@@ -45,7 +45,7 @@ function initializeBitwigObservers()  {
 //there is a max of 128 tracks as a default.  It can be increased or decreased by 
 //simply changing the value in Queno Init
 // function deviceControlInit() {
-// 	for (var t = 0; t < MAX_TRACKS; t++) {
+// 	for (var t = 0; t < LIVE_BANK_HEIGHT; t++) {
 // 		// var track = allSeeingTrackBank.getTrack(t);
 // 		track.addIsSelectedInEditorObserver(createDeviceControlObserver(t)); 
 // 		track.getVolume().addValueObserver(127, createVolumeObserver(t));
@@ -82,7 +82,7 @@ function initializeBitwigObservers()  {
 //track to the given bank
 function createGridObserver(track, statusBank)  {
     return function(scene, statusEngaged)  {
-    	var index = (track*MAX_SCENES)+scene;
+    	var index = (track*LIVE_BANK_WIDTH)+scene;
    		statusBank[index] = statusEngaged;
    		updateClipLED(index);
 }	}
@@ -94,7 +94,7 @@ function createGridObserver(track, statusBank)  {
 //by arming it slightly before the recording observer would
 function createQeuedObserver(track) {
 	return function(scene, statusEngaged)  {
-		var index = (track*MAX_SCENES)+scene;
+		var index = (track*LIVE_BANK_WIDTH)+scene;
    		IS_QEUED[index] = statusEngaged;
 
 
@@ -115,7 +115,7 @@ function createRecordingObserver(track) {
 		pageAutoSwitch.track = track;
 		pageAutoSwitch.scene = scene;
 
-    	var index = (track*MAX_SCENES)+scene;
+    	var index = (track*LIVE_BANK_WIDTH)+scene;
    		IS_RECORDING[index] = statusEngaged;
    		var nextTrack = pageAutoSwitch.nextTrack;
 
@@ -178,24 +178,24 @@ function createMuteObserver(track)  {
 //---------------------------------------------------------------------------
 
 //is track armed
-function createArmObserver(track)  {
-    return function(value)  {
-    	println("arm for track "+track+" = "+value);
-    	var previouslyMultiArmed = numTracksArmed > 1;
+// function createArmObserver(track)  {
+//     return function(value)  {
+//     	println("arm for track "+track+" = "+value);
+//     	var previouslyMultiArmed = numTracksArmed > 1;
 
-    	trackArms[track] = value;
+//     	trackArms[track] = value;
 
-    	numTracksArmed = 0;
-		for(var i = 0; i < trackArms.length; i++) {
-			if(trackArms[i] == true)  {  
-				numTracksArmed++;  }
-		}
+//     	numTracksArmed = 0;
+// 		for(var i = 0; i < trackArms.length; i++) {
+// 			if(trackArms[i] == true)  {  
+// 				numTracksArmed++;  }
+// 		}
 
-		var nowSingularlyArmed = numTracksArmed == 1; 
-		if(previouslyMultiArmed && nowSingularlyArmed)  {
-			tryReleasingStalledPadNotes();  }
-    	// if(currentPage == CLIP_PAGE)  {  setTrackMuteLED(track, value);  }
-}	}
+// 		var nowSingularlyArmed = numTracksArmed == 1; 
+// 		if(previouslyMultiArmed && nowSingularlyArmed)  {
+// 			tryReleasingStalledPadNotes();  }
+//     	// if(currentPage == CLIP_PAGE)  {  setTrackMuteLED(track, value);  }
+// }	}
 
 //---------------------------------------------------------------------------
 

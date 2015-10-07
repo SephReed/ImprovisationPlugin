@@ -11,9 +11,13 @@ var masterTrackName = null;
 var trackNames = initArray(0, SUPER_BANK_MAX_TRACKS);
 var trackOctaveOffsets = initArray(3, SUPER_BANK_MAX_TRACKS);
 
-var MDI_seleced_track = 0;
+var MDI_liveBank = [];
 var MDI_liveBankPosition = 0;
-var MDIBank;
+var MDI_focusedLiveTrack = 0;
+
+var MDI_superBank;
+var MDI_seleced_track = 0;
+
 var MDI_master_track;
 
 var availableTracks = 0;
@@ -24,10 +28,10 @@ var onLiveBankPositionChange = null;
 
 
 function octaveHandlerInit()  {
-    MDIBank = host.createTrackBank(SUPER_BANK_MAX_TRACKS, 0, 1);
+    MDI_superBank = host.createTrackBank(SUPER_BANK_MAX_TRACKS, 0, 1);
 
     for(var t = 0; t < SUPER_BANK_MAX_TRACKS; t++)  {
-        var track = MDIBank.getTrack(t);
+        var track = MDI_superBank.getTrack(t);
 
         track.addNameObserver(256, NOT_YET_NAMED, createNameObserver(t));
         track.addIsSelectedInEditorObserver(createSelectObserver(t));
@@ -37,6 +41,126 @@ function octaveHandlerInit()  {
     MDI_master_track.addNameObserver(256, NOT_YET_NAMED, createMasterTrackNameObserver());
 }
 
+
+
+
+
+
+
+
+
+function MDI_initializeLiveBank() {
+    for(var t = 0; t < LIVE_BANK_HEIGHT; t++) {
+        MDI_liveBank[t] = host.createTrackBank(LIVE_BANK_HEIGHT, MAX_MODABLE_SENDS, LIVE_BANK_WIDTH);
+
+        var track = MDI_liveBank[t].getTrack(t);
+        track.getArm().addValueObserver(createArmObserver(t));
+        track.addIsSelectedInEditorObserver(MDI_createSelectObserver(t));
+        for(var i_s = 0; i_s < t; i_s++) 
+        {   MDI_liveBank[t].scrollScenesDown();  }
+    }
+}
+
+
+
+
+var HAS_CONTENT = initArray(0, LIVE_BANK_TOTAL_SCENES);
+var liveTrackArms = initArray(0, LIVE_BANK_HEIGHT);
+var numTracksArmed = 0;
+
+function MDI_initializeRecordingFunctionality() {
+    for (var t = 0; t < LIVE_BANK_HEIGHT; t++)
+    {
+        var track = MDI_liveBank[t].getTrack(t);
+        track.getArm().addValueObserver(createArmObserver(t));
+        track.addIsSelectedInEditorObserver(MDI_createSelectObserver(t));
+
+        var clipLauncher = track.getClipLauncher();
+        clipLauncher.addHasContentObserver(createHasContentObserver(t, HAS_CONTENT));
+    }
+}
+
+
+function MDI_createSelectObserver(track)  {
+    return function(value)  {
+        println("track #"+track+" selected = "+value);
+        if(value == true) {
+            MDI_focusedLiveTrack = track;  
+        // showTracknum(track);
+      }
+
+        // if(currentPage == CLIP_PAGE)  {  setTrackSelectLED(track, value);  }    
+}   }
+
+function createHasContentObserver(track, statusBank)  {
+    return function(scene, statusEngaged)  {
+        var index = (track*LIVE_BANK_WIDTH)+scene;
+        statusBank[index] = statusEngaged;
+        // updateClipLED(index);
+}   }
+
+
+//is track armed
+function createArmObserver(track)  {
+    return function(value)  {
+        println("arm for track "+track+" = "+value);
+        var previouslyMultiArmed = numTracksArmed > 1;
+
+        liveTrackArms[track] = value;
+
+        numTracksArmed = 0;
+        for(var i = 0; i < liveTrackArms.length; i++) {
+            if(liveTrackArms[i] == true)  {  
+                numTracksArmed++;  }
+        }
+
+        println("FIX RELEASE STALLED NOTES!!!!!!! MDI:93");
+        //
+
+        var nowSingularlyArmed = numTracksArmed == 1; 
+        if(nowSingularlyArmed)  {
+            // MDI_focusedLiveTrack = track;
+            // println("Set focus "+track);
+            if(previouslyMultiArmed){}
+        }
+            // tryReleasingStalledPadNotes();  }
+        // if(currentPage == CLIP_PAGE)  {  setTrackMuteLED(track, value);  }
+}   }
+
+
+//---------------------------------------------------------------------------
+
+//arming is not done by selecting a track
+function armSingleLiveTrack(trackNum)  {
+  if(numTracksArmed == 1 && liveTrackArms[trackNum] == true){  return;  }
+
+  if(liveTrackArms[trackNum] != true)  {
+    MDI_liveBank[trackNum].getTrack(trackNum).getArm().set(true);  }
+  for(var t = 0; t < LIVE_BANK_HEIGHT; t++)  {
+    println("track check for "+t);
+    println("track check for "+t+"!="+trackNum+" && "+liveTrackArms[t]);
+    if(t != trackNum && liveTrackArms[t] == true) 
+    { MDI_liveBank[t].getTrack(t).getArm().set(false);  }
+} }
+
+//---------------------------------------------------------------------------
+
+//just a one liner
+function createRecordingForCurrentLiveTrack()  {
+  createRecordingForLiveTrack(MDI_focusedLiveTrack);  }
+
+//---------------------------------------------------------------------------
+
+//iterates through all the visible clips in a bank and start's a recording
+//on the first empty one
+function createRecordingForLiveTrack(trackNum)  {
+  var offset = trackNum * LIVE_BANK_WIDTH;
+  for(var sc = 0; sc < LIVE_BANK_WIDTH; sc++)  {
+    if(HAS_CONTENT[offset + sc] == false) {
+      MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().record(sc);
+      // hitClip(trackNum, sc);
+      return;  }
+} }
 
 
 
@@ -64,7 +188,7 @@ function updateTrackTitleOctave(trackIndex)  {
     else {  name = name+"                "+OCTAVE_TAG+str;  }
 
     println("Update Track Name: "+name);
-    MDIBank.getTrack(trackIndex).setName(name);
+    MDI_superBank.getTrack(trackIndex).setName(name);
 }
 
 

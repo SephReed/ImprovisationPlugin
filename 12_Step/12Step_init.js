@@ -6,8 +6,11 @@ var heldNums = initArray(false, 8);
 
 
 function stepInit()  {
+	MDI_initializeLiveBank();
+	MDI_initializeRecordingFunctionality();
+
 	for(var i = 0; i < SUPER_BANK_MAX_TRACKS; i++) {
-		deviceBank[i] = MDIBank.getTrack(i).createDeviceBank(1).getDevice(0);
+		deviceBank[i] = MDI_superBank.getTrack(i).createDeviceBank(1).getDevice(0);
 	}
 }
 
@@ -28,13 +31,17 @@ function onMidi(status, data1, data2) {
 			case MODE_CHANGE:  
 				if(data2 > 0) { trackSelectModeOn = !trackSelectModeOn; } break;
 
+			case REC_BTN_LEFT:  
+				if(data2 > 0) { createRecordingForCurrentLiveTrack(); } break;
+
 
 			default:
 				for(var i = 0; i < NUM_BTNS.length; i++) {
 					if (data1 == NUM_BTNS[i])  {
 						if(trackSelectModeOn == true)  {  
 							if(data2 > 0) { 
-								MDIBank.getTrack(i+MDI_liveBankPosition).select();
+								MDI_liveBank[i].getTrack(i).select();
+								armSingleLiveTrack(i);
 								trackSelectModeOn = false;
 						}	}
 						else {  heldNums[i] = (data2 > 0);  }

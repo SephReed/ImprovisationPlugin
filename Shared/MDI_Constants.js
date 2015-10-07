@@ -16,10 +16,14 @@ var CONDUCTOR_PAGE = "CON";
 
 
 /******************************
-*      PAGE CONSTANTS
+*      LIVE BANK CONSTANTS
 ******************************/
 var LIVE_BANK_HEIGHT = 8;
 var LIVE_BANK_WIDTH = 5;
+var LIVE_BANK_TOTAL_SCENES = LIVE_BANK_HEIGHT * LIVE_BANK_WIDTH;
+var MAX_MODABLE_SENDS = 9;
+var MAX_MODABLE_MACROS = 8;
+var MAX_DEVICES = 1;
 
 
 

@@ -6,31 +6,27 @@ load("BitwigObservers.js")
 *  used for quneo display
 ******************************/
 var trackSceneSelectPositions = initArray(0, 127);
-var trackArms = initArray(0, MAX_TRACKS);
-var trackSolos = initArray(0, MAX_TRACKS);
-var trackMutes = initArray(0, MAX_TRACKS);
-var trackRecs = initArray(0, MAX_TRACKS);
-var trackVUs = initArray(0, MAX_TRACKS);
+var trackSolos = initArray(0, LIVE_BANK_HEIGHT);
+var trackMutes = initArray(0, LIVE_BANK_HEIGHT);
+var trackRecs = initArray(0, LIVE_BANK_HEIGHT);
+var trackVUs = initArray(0, LIVE_BANK_HEIGHT);
 
 
-var numScenes = MAX_SCENES * MAX_TRACKS;
-
-var IS_RECORDING = initArray(0, numScenes);
-var HAS_CONTENT = initArray(0, numScenes);
-var IS_QEUED = initArray(0, numScenes);
-var IS_PLAYING = initArray(0, numScenes);
+var IS_RECORDING = initArray(0, LIVE_BANK_TOTAL_SCENES);
+var IS_QEUED = initArray(0, LIVE_BANK_TOTAL_SCENES);
+var IS_PLAYING = initArray(0, LIVE_BANK_TOTAL_SCENES);
 
 
 
 /******************************
 *     VARIABLES
 ******************************/
-var trackVolumes = initArray(0, MAX_TRACKS);
-var trackSends = initArray(0, MAX_TRACKS * MAX_MODABLE_SENDS);
-var trackMacros = initArray(0, MAX_TRACKS * MAX_DEVICES * MAX_MODABLE_MACROS);
-var selectedSendPages = initArray(1, MAX_TRACKS);
-var deviceBanks = initArray(null, MAX_TRACKS);
-var macroPages = initArray(0, MAX_TRACKS * 4);
+var trackVolumes = initArray(0, LIVE_BANK_HEIGHT);
+var trackSends = initArray(0, LIVE_BANK_HEIGHT * MAX_MODABLE_SENDS);
+var trackMacros = initArray(0, LIVE_BANK_HEIGHT * MAX_DEVICES * MAX_MODABLE_MACROS);
+var selectedSendPages = initArray(1, LIVE_BANK_HEIGHT);
+var deviceBanks = initArray(null, LIVE_BANK_HEIGHT);
+var macroPages = initArray(0, LIVE_BANK_HEIGHT * 4);
 // var SELECTED_TRACK = 0;
 
 
@@ -65,12 +61,12 @@ function hitClip(trackNum, sceneNum)  {
     squareButton.numUses++;
     removeClip(trackNum, sceneNum);  }
   else  {
-    var index = (trackNum*MAX_SCENES)+sceneNum;
+    var index = (trackNum*LIVE_BANK_WIDTH)+sceneNum;
      //record clip
     if(HAS_CONTENT[index] == false)  {
       if(currentPage == CLIP_PAGE)  {
-        armSingleTrack(trackNum);  }
-      TRACK_BANKS[trackNum].getChannel(trackNum).getClipLauncher().record(sceneNum);
+        armSingleLiveTrack(trackNum);  }
+      MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().record(sceneNum);
       // pageAutoSwitch = new CurrentlyRecording(trackNum, sceneNum); 
       pageAutoSwitch.track = trackNum;
       pageAutoSwitch.scene = sceneNum;
@@ -80,12 +76,12 @@ function hitClip(trackNum, sceneNum)  {
 
          //if the scene being recorded in is the last visible one, automatically scroll
          //the clips so there will be another empty one available
-        if(sceneNum == MAX_SCENES - 1)  {
+        if(sceneNum == LIVE_BANK_WIDTH - 1)  {
           attemptScrollSceneUp(trackNum);  }
       }
 
        //launch clip
-      else  {  TRACK_BANKS[trackNum].getChannel(trackNum).getClipLauncher().launch(sceneNum);  }
+      else  {  MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().launch(sceneNum);  }
 } }
 
 //---------------------------------------------------------------------------
@@ -109,26 +105,15 @@ function muteTrack(trackNum, state)  {
 }
 
 
-//---------------------------------------------------------------------------
 
-//arming is not done by selecting a track
-function armSingleTrack(trackNum)  {
-  if(numTracksArmed == 1 && trackArms[trackNum] == true){  return;  }
-
-  if(trackArms[trackNum] != true)  {
-    TRACK_BANKS[trackNum].getTrack(trackNum).getArm().set(true);  }
-  for(var t = 0; t < 8; t++)  {
-    if(t != trackNum && trackArms[t] == true) 
-    { TRACK_BANKS[t].getTrack(t).getArm().set(false);  }
-} }
   
 //---------------------------------------------------------------------------
 
 //checks to see if scene bank for track can move right.  if it can, it moves 
 //it right one scene
 function attemptScrollSceneUp(trackNum)  {
-  if(trackSceneSelectPositions[trackNum] < totalScenesAvailable - MAX_SCENES) {
-    TRACK_BANKS[trackNum].scrollScenesDown();  
+  if(trackSceneSelectPositions[trackNum] < totalScenesAvailable - LIVE_BANK_WIDTH) {
+    MDI_liveBank[trackNum].scrollScenesDown();  
     trackSceneSelectPositions[trackNum]++;  }
 }
 
@@ -139,30 +124,13 @@ function attemptScrollSceneUp(trackNum)  {
 //if your clip is in the right area, it selects a clip and delete's it
 //Bitwig requires clipLauncher.delete(sceneNum) for this to be done correctly
 function removeClip(trackNum, sceneNum)  {
-  TRACK_BANKS[trackNum].getChannel(trackNum).getClipLauncher().select(sceneNum);
+  MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().select(sceneNum);
   application.remove(); 
-  // TRACK_BANKS[trackNum].getChannel(trackNum).getClipLauncher().createEmptyClip(sceneNum, 0);
-  var clipIndex = (trackNum*MAX_SCENES)+sceneNum;  
+  // MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().createEmptyClip(sceneNum, 0);
+  var clipIndex = (trackNum*LIVE_BANK_WIDTH)+sceneNum;  
   HAS_CONTENT[clipIndex] = false;  
 }
 
-//---------------------------------------------------------------------------
-
-//just a one liner
-function createRecordingForCurrentTrack()  {
-  createRecordingForTrack(selectedTrack);  }
-
-//---------------------------------------------------------------------------
-
-//iterates through all the visible clips in a bank and start's a recording
-//on the first empty one
-function createRecordingForTrack(trackNum)  {
-  var offset = trackNum * MAX_SCENES;
-  for(var sc = 0; sc < MAX_SCENES; sc++)  {
-    if(HAS_CONTENT[offset + sc] == false) {
-      hitClip(trackNum, sc);
-      return;  }
-} }
 
 //---------------------------------------------------------------------------
 
@@ -173,7 +141,7 @@ function moveAllTrackBanks(spaces) {
       //
   for(var t = 0; t < 8; t++) {
       //move bank up or down
-    var bank = TRACK_BANKS[t];
+    var bank = MDI_liveBank[t];
     for(var i = 0; i < Math.abs(spaces); i++) {
       if(spaces < 0) {
         bank.scrollTracksUp();  }

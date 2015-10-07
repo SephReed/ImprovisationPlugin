@@ -46,7 +46,7 @@ function tryAsConductorPadPosData(padNum, vertex, position)  {
 //---------------------------------------------------------------------------
 
 function showConductorPage()  {
-	for(var i = 0; i < MAX_TRACKS; i++)  {
+	for(var i = 0; i < LIVE_BANK_HEIGHT; i++)  {
 		var index = MAX_MODABLE_MACROS * i;
 		padStates[i].setXPos(trackMacros[index]);
 		padStates[i].setYPos(trackMacros[index+1]);
