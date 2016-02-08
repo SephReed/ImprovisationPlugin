@@ -69,17 +69,19 @@
 function tryAsTrackCCData(data1, data2)  {
    //The First Vertical VU is for volume always
 	if(data1 == VERT_VU_1)  {
-		if(modButton2 != BTN_RELEASED)  {
-			var addMe = new VolumeSlide(selectedTrack);
-			volumeSlides.push(addMe);
-			hasVolumeSlide[selectedTrack] = true;
-		}
-	   //this is still very beta code having to do with automatic fades
-		else  {
-			if(hasVolumeSlide[selectedTrack] == true)  {  
-				stopVolSlide(selectedTrack);  }
-			getTrackFromBank(selectedTrack).getVolume().set(data2, 127);  
-		}
+		// if(modButton2 != BTN_RELEASED)  {
+		// 	var addMe = new VolumeSlide(selectedTrack);
+		// 	volumeSlides.push(addMe);
+		// 	hasVolumeSlide[selectedTrack] = true;
+		// }
+	 //   //this is still very beta code having to do with automatic fades
+		// else  {
+		// 	if(hasVolumeSlide[selectedTrack] == true)  {  
+		// 		stopVolSlide(selectedTrack);  }
+		// 	getTrackFromBank(selectedTrack).getVolume().set(data2, 127);  
+		// }
+
+		getTrackFromBank(selectedTrack).getVolume().set(data2, 128);  
 	}
 
    //Then Fourth Vertical VU has a value of 4, so the only thing less than 4 which
@@ -94,7 +96,7 @@ function tryAsTrackCCData(data1, data2)  {
 
 			var send = track.getSend(sendNum);
 			
-			if(send != null) {  send.set(data2, 127);  }
+			if(send != null) {  send.set(data2, 128);  }
 	}	}
 
    //the four horizontal VU's can be used to choose between one of two macros independently
@@ -107,7 +109,7 @@ function tryAsTrackCCData(data1, data2)  {
 		if(macroPages[selectedTrack * 4 + VU_num] == 1) {
 			macroNum += 4;  }
 			
-		deviceBanks[selectedTrack].getDevice(0).getMacro(macroNum).getAmount().set(data2, 127);
+		deviceBanks[selectedTrack].getDevice(0).getMacro(macroNum).getAmount().set(data2, 128);
 }	}
 
 //---------------------------------------------------------------------------

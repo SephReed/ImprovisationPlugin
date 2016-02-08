@@ -62,12 +62,21 @@ function tryAsDrumCornerTrigger(x, y, velocity)  {
 		y %= 6;
 		var trackHitNum = ((1-y)*4) + x;
 
-		if(pageAutoSwitch.status == RECORDING_NOW)  {
-			pageAutoSwitch.nextTrack = trackHitNum;  }
-		else  {
-			if(selectedTrack != trackHitNum)  
-			{	selectTrackFromBank(trackHitNum);  }
-	}	}
+
+		if(recStatus.recTrack != -1)  {
+	        recStatus.nextTrack = trackHitNum;
+	    }
+	    else {
+	    	selectTrackFromBank(trackHitNum);	
+	    }
+
+		// if(pageAutoSwitch.status == RECORDING_NOW)  {
+		// 	pageAutoSwitch.nextTrack = trackHitNum;  }
+		// else  {
+		// 	if(selectedTrack != trackHitNum)  
+		// 	{	selectTrackFromBank(trackHitNum);  }
+
+	}	
 
 	return true;
 }

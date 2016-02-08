@@ -17,7 +17,8 @@ function init()  {
 	// host.getMidiInPort(0).setSysexCallback(onSysex);
 	noteIn = host.getMidiInPort(0).createNoteInput("eIKeys", "82????", "92????");
 	noteIn.setShouldConsumeEvents(false);
-	keysInit();
+	MDI_initializeLiveBank();
+	keysInit(25);
 }
 
 

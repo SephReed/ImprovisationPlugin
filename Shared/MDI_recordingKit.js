@@ -1,5 +1,7 @@
 
 
+load("MDI_BitwigHax.js");
+
 
 
 var recStatus = new RecordingStatus();
@@ -20,6 +22,8 @@ function MDI_initializeRecordingFunctionality() {
         clipLauncher.addIsRecordingQueuedObserver(MDI_createRecordingQueuedObserver(t));
         clipLauncher.addIsRecordingObserver(MDI_createRecordingObserver(t));
     }
+
+    MDI_initializeBitwigHaxFunctionality();
 }
 
 
@@ -48,7 +52,8 @@ function MDI_hitRightRecButton() {
         // createRecordingForCurrentLiveTrack();
         scrollPage();
     }
-    else if(recStatus.recTrack == MDI_focusedLiveTrack) {
+    // else if(recStatus.recTrack == MDI_focusedLiveTrack) {
+    else {    
         MDI_hitLiveBankClip(recStatus.recTrack, recStatus.recScene);
         if(recStatus.nextTrack != -1)  {
             createRecordingForLiveTrack(recStatus.nextTrack);
@@ -76,8 +81,10 @@ function MDI_createSelectObserver(track)  {
     return function(value)  {
         println("track #"+track+" selected = "+value);
         if(value == true) {
+            var oldVal = MDI_focusedLiveTrack;
             MDI_focusedLiveTrack = track;  
-        // showTracknum(track);
+
+            // if(oldVal != track) showTracknum(track);
       }
 }   }
 
@@ -136,14 +143,16 @@ function createArmObserver(track)  {
                 numTracksArmed++;  }
         }
 
-        println("FIX RELEASE STALLED NOTES!!!!!!! MDI:93");
+        // println("FIX RELEASE STALLED NOTES!!!!!!! MDI:93");
         //
 
         var nowSingularlyArmed = numTracksArmed == 1; 
         if(nowSingularlyArmed)  {
             // MDI_focusedLiveTrack = track;
             // println("Set focus "+track);
-            if(previouslyMultiArmed){}
+            if(previouslyMultiArmed){
+                tryReleasingStalledMidi();
+            }
         }
             // tryReleasingStalledPadNotes();  }
         // if(currentPage == CLIP_PAGE)  {  setTrackMuteLED(track, value);  }
@@ -167,16 +176,16 @@ function MDI_hitLiveBankClip(trackNum, sceneNum) {
 
 //arming is not done by selecting a track
 function armSingleLiveTrack(trackNum)  {
-  if(numTracksArmed == 1 && liveTrackArms[trackNum] == true){  return;  }
+    if(numTracksArmed == 1 && liveTrackArms[trackNum] == true){  return;  }
 
-  if(liveTrackArms[trackNum] != true)  {
-    MDI_liveBank[trackNum].getTrack(trackNum).getArm().set(true);  }
-  for(var t = 0; t < LIVE_BANK_HEIGHT; t++)  {
-    println("track check for "+t);
-    println("track check for "+t+"!="+trackNum+" && "+liveTrackArms[t]);
-    if(t != trackNum && liveTrackArms[t] == true) 
-    { MDI_liveBank[t].getTrack(t).getArm().set(false);  }
-} }
+    if(liveTrackArms[trackNum] != true)  {
+        MDI_liveBank[trackNum].getTrack(trackNum).getArm().set(true);  }
+    for(var t = 0; t < LIVE_BANK_HEIGHT; t++)  {
+        println("track check for "+t);
+        println("track check for "+t+"!="+trackNum+" && "+liveTrackArms[t]);
+        if(t != trackNum && liveTrackArms[t] == true) 
+        { MDI_liveBank[t].getTrack(t).getArm().set(false);  }
+}   }
 
 //---------------------------------------------------------------------------
 

@@ -141,6 +141,8 @@ function quneoInit()  {
 //This function returns true if the midi is used
 function onMidi(status, data1, data2) {
 
+	// println(status+" "+data1+" "+data2);
+
 	if (isChannelController(status)) {
 		var channel = status%16;
 
@@ -364,11 +366,14 @@ function tryReleasingStalledPadNotes()  {
 	if(currentlyStallingPadHit)  {
 	   //pad hits are only stalled for recording purposes
 	   //if not recording, ensure that all functionality is initialized
-		if(pageAutoSwitch.status == RECORDING_OFF)  {
+	   if(recStatus.recTrack == -1)  {
+		// if(pageAutoSwitch.status == RECORDING_OFF)  {
 			for(var i = 0; i < stalledPadHits.length; i++)  {
 				stalledPadHits[i] = null;}	
 			currentlyStallingPadHit = false;
 		}
+
+
 
 	   //if there is no track arm interference and pad hit's are stalled,
 	   //release the hits
@@ -421,7 +426,9 @@ function sendPadHitToBitwig(padNum, velocity)  {
 		midiOutForPad[padNum] = midiOut;
 	}
 		//
-	if(pageAutoSwitch.status == RECORDING_QUEUED)  {
+
+	if(recStatus.queuedTrack != -1)  {
+	// if(pageAutoSwitch.status == RECORDING_QUEUED)  {
 		var nextMeasureWorthy = (1 - (beatPosition%1)) < BITWIG_UPDATE_LAG;  //within 1/16 of beat start
 		var doubleArmIssue = (numTracksArmed > 1 && velocity != 0);
 		if(nextMeasureWorthy || doubleArmIssue)  {
@@ -702,10 +709,11 @@ function checkForEndOfRecordingMeasure()  {
 			// 	if (padHitsData[i] != null)  {
 			// 		sendPadHitToBitwig(i, 0);  }
 			// }
-			if (pageAutoSwitch.nextTrack != -1)  {
+			// if (recStatus.nextTrack != -1)  {
 				println("early arm");
-				armSingleLiveTrack(pageAutoSwitch.nextTrack);
-			}
+				// armSingleLiveTrack(pageAutoSwitch.nextTrack);
+				armSingleLiveTrack(recStatus.queuedTrack);
+			// }
 
 		}
 	}
@@ -727,6 +735,9 @@ function updateEyesAndTriangleToBeatTime() {
    //when a recording is in process, the spinners show the measure position.  rec button blinks.
 	// if(pageAutoSwitch.status != RECORDING_OFF) {
 	if(recStatus.recTrack != -1 || recStatus.queuedTrack != -1)  {
+
+		println(recStatus.recTrack+" "+recStatus.queuedTrack);
+
 		var recBut = (4*value)%127;
 		if(recBut < 100) { recBut = 0;  }
 		sendMidi(144, 33, recBut);
