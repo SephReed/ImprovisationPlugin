@@ -46,10 +46,10 @@ load("DeviceControls.js")
 /******************************
 * TRACK INTERACTION VARIABLES:
 ******************************/
-var pageAutoSwitch = new CurrentlyRecording(-1, -1);
-pageAutoSwitch.status = RECORDING_CLOSED;
+// var pageAutoSwitch = new CurrentlyRecording(-1, -1);
+// pageAutoSwitch.status = RECORDING_CLOSED;
 
-var selectedTrack = 0;
+// var selectedTrack = 0;
 
 
 
@@ -96,14 +96,33 @@ host.addDeviceNameBasedDiscoveryPair(quneoPortNames, quneoPortNames);
 *     INITIALIZATION
 ******************************/
 function quneoInit()  {
+	// animateThumbzSymbol();
+
    //further *Quneo Host* definining
    	host.println(QUNEO_LOAD_MSG);
 	host.getMidiInPort(0).setMidiCallback(onMidi);
+
+	MDI_registerButtons(16, function(buttonNum) {
+
+		println("selected track "+MDI_focusedLiveTrack);
+
+		var midiNum = 0;
+		if(buttonNum < 12) {  midiNum = buttonNum; }
+		else if(buttonNum == 14)  { midiNum = 12;  }
+
+		midiNum += (12*trackOctaveOffsets[MDI_focusedLiveTrack]);
+
+		return midiNum; 
+	});
+
+	// MDI_registerButtons(16);
 
 	// var test = host.getPreferences().getStringSetting("Engage", null, 25, "Hello World");
 	
 	QUNEONoteIn = host.getMidiInPort(0).createNoteInput("QUNEO", "82????", "92????");
 	QUNEONoteIn.setShouldConsumeEvents(false);
+
+	MDI_initializeBitwigHaxFunctionality(QUNEONoteIn);
 
 	for(var i = 0; i < LIVE_BANK_HEIGHT; i++){
 		trackSolos[i] = new ToggleableButton(i, TGL_BTN_SOLO);
@@ -245,7 +264,7 @@ function diamondButtonUpdate(data2)  {
 function squareButtonUpdate(data2)  {
 	if(data2 == 0)  {
 		if(squareButton.numUses == 0)	{
-			getTrackFromBank(selectedTrack).stop();  }
+			getTrackFromBank(MDI_focusedLiveTrack).stop();  }
 		squareButton.setHeld(false);
 	}
 	else  {
@@ -361,46 +380,47 @@ function leftRotaryButtonHit()  {
 ******************************/
 
 //
-function tryReleasingStalledPadNotes()  {
-	// println("attempting release of stalled pad hits "+currentlyStallingPadHit+" "+numTracksArmed);
-	if(currentlyStallingPadHit)  {
-	   //pad hits are only stalled for recording purposes
-	   //if not recording, ensure that all functionality is initialized
-	   if(recStatus.recTrack == -1)  {
-		// if(pageAutoSwitch.status == RECORDING_OFF)  {
-			for(var i = 0; i < stalledPadHits.length; i++)  {
-				stalledPadHits[i] = null;}	
-			currentlyStallingPadHit = false;
-		}
+// function tryReleasingStalledPadNotes()  {
+// 	// println("attempting release of stalled pad hits "+currentlyStallingPadHit+" "+numTracksArmed);
+// 	if(currentlyStallingPadHit)  {
+// 	   //pad hits are only stalled for recording purposes
+// 	   //if not recording, ensure that all functionality is initialized
+// 	   if(recStatus.recTrack == -1)  {
+// 		// if(pageAutoSwitch.status == RECORDING_OFF)  {
+// 			for(var i = 0; i < stalledPadHits.length; i++)  {
+// 				stalledPadHits[i] = null;}	
+// 			currentlyStallingPadHit = false;
+// 		}
 
 
 
-	   //if there is no track arm interference and pad hit's are stalled,
-	   //release the hits
-		else if(numTracksArmed == 1)  {
-			for(var i = 0; i < stalledPadHits.length; i++)  {
-				if(stalledPadHits[i] != null)  {
-					// println("releasing stalled pad hit "+i);
-					sendPadHitToBitwig(midiOutForPad[i], stalledPadHits[i].velocity);
+// 	   //if there is no track arm interference and pad hit's are stalled,
+// 	   //release the hits
+// 		else if(numTracksArmed == 1)  {
+// 			for(var i = 0; i < stalledPadHits.length; i++)  {
+// 				if(stalledPadHits[i] != null)  {
+// 					// println("releasing stalled pad hit "+i);
+// 					sendPadHitToBitwig(midiOutForPad[i], stalledPadHits[i].velocity);
 
-					if(stalledPadHits[i].impulseOnly == true)  {
-						sendNoteOnToBitwig(midiOutForPad[i], 0);
-						midiOutForPad[i] = -1;
-					}
+// 					if(stalledPadHits[i].impulseOnly == true)  {
+// 						sendNoteOnToBitwig(midiOutForPad[i], 0);
+// 						midiOutForPad[i] = -1;
+// 					}
 
-					stalledPadHits[i] = null;
-			}	}
+// 					stalledPadHits[i] = null;
+// 			}	}
 
-			currentlyStallingPadHit = false;
-		}
-	}
-}
+// 			currentlyStallingPadHit = false;
+// 		}
+// 	}
+// }
 
 //---------------------------------------------------------------------------
 
 function releaseAllPads()  {
 	for(var i = 0; i < padHitsData.length; i++)  {
 		if (padHitsData[i] != null)  {
+			// sendButtonHitToBitwig(i, 0);  }
 			sendPadHitToBitwig(i, 0);  }
 	}
 }
@@ -415,47 +435,47 @@ function releaseAllHeldToggles()  {
 
 //---------------------------------------------------------------------------
 
-function sendPadHitToBitwig(padNum, velocity)  {
+// function sendPadHitToBitwig(padNum, velocity)  {
 
-	if(midiOutForPad[padNum] == -1) {
-		var trackIndex = MDI_liveBankPosition + selectedTrack;
-		var midiOut = trackOctaveOffsets[trackIndex] * 12;
-		if(padNum == 14)  {  midiOut += 12;  }
-		else  {  midiOut += padNum;  }
+// 	if(midiOutForPad[padNum] == -1) {
+// 		var trackIndex = MDI_liveBankPosition + selectedTrack;
+// 		var midiOut = trackOctaveOffsets[trackIndex] * 12;
+// 		if(padNum == 14)  {  midiOut += 12;  }
+// 		else  {  midiOut += padNum;  }
 
-		midiOutForPad[padNum] = midiOut;
-	}
-		//
+// 		midiOutForPad[padNum] = midiOut;
+// 	}
+// 		//
 
-	if(recStatus.queuedTrack != -1)  {
-	// if(pageAutoSwitch.status == RECORDING_QUEUED)  {
-		var nextMeasureWorthy = (1 - (beatPosition%1)) < BITWIG_UPDATE_LAG;  //within 1/16 of beat start
-		var doubleArmIssue = (numTracksArmed > 1 && velocity != 0);
-		if(nextMeasureWorthy || doubleArmIssue)  {
-			// if (pageAutoSwitch.nextTrack != -1)  {
-			// 	println("attempting early arm");
-			// 	armSingleTrack(pageAutoSwitch.nextTrack);
-			// }
-			// releaseAllPads();
+// 	if(recStatus.queuedTrack != -1)  {
+// 	// if(pageAutoSwitch.status == RECORDING_QUEUED)  {
+// 		var nextMeasureWorthy = (1 - (beatPosition%1)) < BITWIG_UPDATE_LAG;  //within 1/16 of beat start
+// 		var doubleArmIssue = (numTracksArmed > 1 && velocity != 0);
+// 		if(nextMeasureWorthy || doubleArmIssue)  {
+// 			// if (pageAutoSwitch.nextTrack != -1)  {
+// 			// 	println("attempting early arm");
+// 			// 	armSingleTrack(pageAutoSwitch.nextTrack);
+// 			// }
+// 			// releaseAllPads();
 
-			if(stalledPadHits[padNum] == null && velocity > 0)  {
+// 			if(stalledPadHits[padNum] == null && velocity > 0)  {
 
-				stalledPadHits[padNum] = new StalledPadHit(velocity);
-				currentlyStallingPadHit = true;
-				println("note caught to be put in next measure");
-				return true;  
-			}
-			else if(stalledPadHits[padNum] != null && velocity == 0)  {
-				stalledPadHits[padNum].impulseOnly = true;
-				return true;
-		}	}	
-	}
+// 				stalledPadHits[padNum] = new StalledPadHit(velocity);
+// 				currentlyStallingPadHit = true;
+// 				println("note caught to be put in next measure");
+// 				return true;  
+// 			}
+// 			else if(stalledPadHits[padNum] != null && velocity == 0)  {
+// 				stalledPadHits[padNum].impulseOnly = true;
+// 				return true;
+// 		}	}	
+// 	}
 
 	
 
-	sendNoteOnToBitwig(midiOutForPad[padNum], velocity);
-	if(velocity == 0) {  midiOutForPad[padNum] = -1;  }
-}
+// 	sendNoteOnToBitwig(midiOutForPad[padNum], velocity);
+// 	if(velocity == 0) {  midiOutForPad[padNum] = -1;  }
+// }
 
 // //---------------------------------------------------------------------------
 
@@ -513,13 +533,13 @@ function setPage(page)  {
 //when selecting a track, it is armed independent from it's selection.
 function selectTrackFromBank(trackNum)  {
 	if(currentPage == DRUM_PAGE)  {
-		trackSolos[selectedTrack].setHeld(false);  }
+		trackSolos[MDI_focusedLiveTrack].setHeld(false);  }
 
-	selectedTrack = trackNum;  
+	// MDI_selected_track = trackNum;  
 	armSingleLiveTrack(trackNum);
 		//
-	println("select track from bank "+trackNum);
-	getTrackFromBank(trackNum).select();
+	// println("select track from bank "+trackNum);
+	// getTrackFromBank(trackNum).select();
 
 	if(currentPage == CLIP_PAGE)  {
 		for(var t = 0; t < 8; t++) {
@@ -692,32 +712,32 @@ function updateQuneoToBeatTime() {
 	// updateSlides();
 	updateClipPageAnimationsToBeatTime();
 	updateEyesAndTriangleToBeatTime();
-   	checkForEndOfRecordingMeasure();
+   	// checkForEndOfRecordingMeasure();
 }
 
 //---------------------------------------------------------------------------
 
 // at the end of a recording, all note's go off.  Unfortunately
-function checkForEndOfRecordingMeasure()  {
-	// if(pageAutoSwitch.status == RECORDING_QUEUED)  {
-	if(recStatus.queuedTrack != -1)  {
-		var tillEndOfMeasure = (4 - (beatPosition%4));
-		var atEndOfMeasure =  tillEndOfMeasure < BITWIG_UPDATE_LAG;  //within 1/16 of end of measure
-		if(atEndOfMeasure)  {
-			println(tillEndOfMeasure + " beats till measure end");  
-			// for(var i = 0; i < padHitsData.length; i++)  {
-			// 	if (padHitsData[i] != null)  {
-			// 		sendPadHitToBitwig(i, 0);  }
-			// }
-			// if (recStatus.nextTrack != -1)  {
-				println("early arm");
-				// armSingleLiveTrack(pageAutoSwitch.nextTrack);
-				armSingleLiveTrack(recStatus.queuedTrack);
-			// }
+// function checkForEndOfRecordingMeasure()  {
+// 	// if(pageAutoSwitch.status == RECORDING_QUEUED)  {
+// 	if(recStatus.queuedTrack != -1)  {
+// 		var tillEndOfMeasure = (4 - (beatPosition%4));
+// 		var atEndOfMeasure =  tillEndOfMeasure < BITWIG_UPDATE_LAG;  //within 1/16 of end of measure
+// 		if(atEndOfMeasure)  {
+// 			println(tillEndOfMeasure + " beats till measure end");  
+// 			// for(var i = 0; i < padHitsData.length; i++)  {
+// 			// 	if (padHitsData[i] != null)  {
+// 			// 		sendPadHitToBitwig(i, 0);  }
+// 			// }
+// 			// if (recStatus.nextTrack != -1)  {
+// 				println("early arm");
+// 				// armSingleLiveTrack(pageAutoSwitch.nextTrack);
+// 				armSingleLiveTrack(recStatus.queuedTrack);
+// 			// }
 
-		}
-	}
-}
+// 		}
+// 	}
+// }
 
 //---------------------------------------------------------------------------
 
@@ -736,7 +756,7 @@ function updateEyesAndTriangleToBeatTime() {
 	// if(pageAutoSwitch.status != RECORDING_OFF) {
 	if(recStatus.recTrack != -1 || recStatus.queuedTrack != -1)  {
 
-		println(recStatus.recTrack+" "+recStatus.queuedTrack);
+		// println(recStatus.recTrack+" "+recStatus.queuedTrack);
 
 		var recBut = (4*value)%127;
 		if(recBut < 100) { recBut = 0;  }

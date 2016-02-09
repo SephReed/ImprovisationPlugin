@@ -16,6 +16,7 @@ function keysInit(i_numKeys)  {
 	// });
 	MDI_initializeLiveBank();
 	MDI_initializeRecordingFunctionality();
+	MDI_initializeBitwigHaxFunctionality(noteIn);
 	MDI_registerButtons(numKeys);
 
 

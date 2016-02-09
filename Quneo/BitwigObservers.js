@@ -18,7 +18,7 @@ function initializeBitwigObservers()  {
 		clipLauncher.setIndication(true);
 		clipLauncher.addHasContentObserver(createHasContentObserver(t));
   	clipLauncher.addIsPlayingObserver(createGridObserver(t, IS_PLAYING));
-  	clipLauncher.addIsRecordingObserver(createRecordingObserver(t));
+  	// clipLauncher.addIsRecordingObserver(createRecordingObserver(t));
   	clipLauncher.addIsQueuedObserver(createQeuedObserver(t));
 
 
@@ -29,7 +29,7 @@ function initializeBitwigObservers()  {
     for(var s = 0; s < MAX_MODABLE_SENDS; s++) {
       track.getSend(s).addValueObserver(127, createSendObserver(t, s));  }
 
-		createMeasureEndCarpetBomb(track);
+		// createMeasureEndCarpetBomb(track);
 	}
 
 	host.createSceneBank(1).addSceneCountObserver(createSceneCountObsterver());
@@ -105,12 +105,12 @@ function createHasContentObserver(track)  {
 function createQeuedObserver(track) {
 	return function(scene, statusEngaged)  {
 		var index = (track*LIVE_BANK_WIDTH)+scene;
-   		IS_QEUED[index] = statusEngaged;
+    //  	IS_QEUED[index] = statusEngaged;
 
 
-   		if(statusEngaged == true && pageAutoSwitch.track == track && pageAutoSwitch.nextTrack != -1 )  {
-			getTrackFromBank(pageAutoSwitch.nextTrack).getArm().set(true);	
-		}
+    //  	if(statusEngaged == true && pageAutoSwitch.track == track && pageAutoSwitch.nextTrack != -1 )  {
+		// 	getTrackFromBank(pageAutoSwitch.nextTrack).getArm().set(true);	
+		// }
 
 		updateClipLED(index);
 }	}	
@@ -120,34 +120,34 @@ function createQeuedObserver(track) {
 //the recording observer updates the IS_RECORDING bank
 //it also updates the currently recording variable and double checks the track
 //the only one selected and armed
-function createRecordingObserver(track) {
-	return function(scene, statusEngaged)  {
-		pageAutoSwitch.track = track;
-		pageAutoSwitch.scene = scene;
+// function createRecordingObserver(track) {
+// 	return function(scene, statusEngaged)  {
+// 		pageAutoSwitch.track = track;
+// 		pageAutoSwitch.scene = scene;
 
-    	var index = (track*LIVE_BANK_WIDTH)+scene;
-   		IS_RECORDING[index] = statusEngaged;
-   		var nextTrack = pageAutoSwitch.nextTrack;
+//     	var index = (track*LIVE_BANK_WIDTH)+scene;
+//    		IS_RECORDING[index] = statusEngaged;
+//    		var nextTrack = pageAutoSwitch.nextTrack;
 
-   		if(statusEngaged == true) {
-   			println("recording started");
-   			pageAutoSwitch.nextTrack = -1;
-   			// if(nextTrack != -1)  {    }
-   			if(nextTrack == track)  {  selectTrackFromBank(track);  }
-   			pageAutoSwitch.status = RECORDING_NOW;  
-   		}
+//    		if(statusEngaged == true) {
+//    			println("recording started");
+//    			pageAutoSwitch.nextTrack = -1;
+//    			// if(nextTrack != -1)  {    }
+//    			if(nextTrack == track)  {  selectTrackFromBank(track);  }
+//    			pageAutoSwitch.status = RECORDING_NOW;  
+//    		}
 
-   		//RIGHT HERE.  Record queue instead.  Release all pads not working.
-   		else  { 
-   			if (pageAutoSwitch.status == RECORDING_QUEUED && nextTrack != -1)  {  
-   				// releaseAllPads();
-   			   //not actually inherently true, but it's very very likely
-   				pageAutoSwitch.status = RECORDING_NOW;
-   				println("track coming up "+nextTrack);  
-   			}
-   			else {  pageAutoSwitch.status = RECORDING_OFF;   }
-   		}
-}	}
+//    		//RIGHT HERE.  Record queue instead.  Release all pads not working.
+//    		else  { 
+//    			if (pageAutoSwitch.status == RECORDING_QUEUED && nextTrack != -1)  {  
+//    				// releaseAllPads();
+//    			   //not actually inherently true, but it's very very likely
+//    				pageAutoSwitch.status = RECORDING_NOW;
+//    				println("track coming up "+nextTrack);  
+//    			}
+//    			else {  pageAutoSwitch.status = RECORDING_OFF;   }
+//    		}
+// }	}
 
 //---------------------------------------------------------------------------
 
@@ -155,7 +155,7 @@ function createRecordingObserver(track) {
 function createSelectObserver(track)  {
     return function(value)  {
     	if(value == true) {
-    		selectedTrack = track;  
+    		// selectedTrack = track;  
         showTracknum(track);
       }
 
@@ -229,26 +229,26 @@ function createSceneCountObsterver()  {
 
 //---------------------------------------------------------------------------
 
-function createMeasureEndCarpetBomb(track)  {
-	var clipLauncher = track.getClipLauncher();
+// function createMeasureEndCarpetBomb(track)  {
+// 	var clipLauncher = track.getClipLauncher();
 	
-	clipLauncher.addIsRecordingObserver(function(scene, statusEngaged)  {	
-   		// println("recording "+statusEngaged);
-   		tryReleasingStalledPadNotes();  
-   	});
+// 	clipLauncher.addIsRecordingObserver(function(scene, statusEngaged)  {	
+//    		// println("recording "+statusEngaged);
+//    		tryReleasingStalledPadNotes();  
+//    	});
 
-	clipLauncher.addIsRecordingQueuedObserver(function(scene, statusEngaged)  {
-		// println("recording queue for track "+statusEngaged);
-   		if(statusEngaged == false)  {
-   			tryReleasingStalledPadNotes();  }
-   	});
+// 	clipLauncher.addIsRecordingQueuedObserver(function(scene, statusEngaged)  {
+// 		// println("recording queue for track "+statusEngaged);
+//    		if(statusEngaged == false)  {
+//    			tryReleasingStalledPadNotes();  }
+//    	});
 
-	clipLauncher.addIsQueuedObserver(function(scene, statusEngaged)  {
-		// println("queue for track "+statusEngaged);
-   		if(statusEngaged == false)  {
-   			tryReleasingStalledPadNotes();  }
-	});
-}
+// 	clipLauncher.addIsQueuedObserver(function(scene, statusEngaged)  {
+// 		// println("queue for track "+statusEngaged);
+//    		if(statusEngaged == false)  {
+//    			tryReleasingStalledPadNotes();  }
+// 	});
+// }
 
 
 
@@ -276,7 +276,7 @@ function createMeasureEndCarpetBomb(track)  {
 function createSendObserver(trackNum, sendNum)  {
     return function(value)  {
     	trackSends[trackNum * MAX_MODABLE_SENDS + sendNum] = value;
-    	if(trackNum == selectedTrack) {
+    	if(trackNum == MDI_selected_track) {
     		showSend(trackNum, sendNum);  }
     };
 } 
@@ -289,7 +289,7 @@ function createVolumeObserver(trackNum)  {
     return function(value)  {
     	// println("track#"+t+" volume set: "+value); 
     	trackVolumes[trackNum] = value;
-    	if(trackNum == selectedTrack) {
+    	if(trackNum == MDI_selected_track) {
     		showVolume(trackNum);  }
     };
 } 
@@ -302,7 +302,7 @@ function createMacroObserver(trackNum, macroNum)  {
 		var macroIndex = (trackNum * MAX_MODABLE_MACROS + macroNum);
 		trackMacros[macroIndex] = value;
 			//
-		if(trackNum == selectedTrack) {
+		if(trackNum == MDI_selected_track) {
     		showMacro(trackNum, macroNum);  }
 	}
 }

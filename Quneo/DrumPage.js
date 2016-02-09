@@ -43,11 +43,13 @@ var drumHitsData = initArray(null, 16);
 function tryAsDrumButtonData(data1, data2)  {
 	if(currentPage != DRUM_PAGE)  {  return false;  }
 
+	println("mod track octave "+MDI_focusedLiveTrack);
+
    	if(data1 == VERT_ARROW_1_DOWN && data2 != 0)  {
-		modTrackOctave(MDI_seleced_track, -1);
+		modTrackOctave(MDI_focusedLiveTrack, -1);
 	}
 	else if(data1 == VERT_ARROW_1_UP && data2 != 0)  {
-		modTrackOctave(MDI_seleced_track, 1);
+		modTrackOctave(MDI_focusedLiveTrack, 1);
 	}
 		//
 	return true;
@@ -89,7 +91,9 @@ function tryAsDrumPadTrigger(padNum, velocity)  {
 
 	//If it's in the drum pad note range
 	if(padNum < 12 || padNum == 14)  {
-		sendPadHitToBitwig(padNum, velocity);
+		// println("button hit "+padNum);
+		// sendPadHitToBitwig(padNum, velocity);
+		sendButtonHitToBitwig(padNum, velocity);
 			
 		var xHitPos = padStates[padNum].xPos;
 		var yHitPos = padStates[padNum].yPos;
@@ -103,7 +107,7 @@ function tryAsDrumPadTrigger(padNum, velocity)  {
 		}
 	}
 	else if (padNum == 15) {
-		soloTrack(selectedTrack, velocity > 0);  }
+		soloTrack(MDI_focusedLiveTrack, velocity > 0);  }
 
 	return true;
 }
@@ -123,7 +127,9 @@ function tryAsDrumPadPosData(padNum, vertex, position)  {
 					drumHitsData[padNum].xHitPos = padStates[padNum].xPos;
 					drumHitsData[padNum].yHitPos = padStates[padNum].yPos;
 
-					sendPadHitToBitwig(padNum, padStates[padNum].pressure);
+					// sendPadHitToBitwig(padNum, padStates[padNum].pressure);
+					sendButtonHitToBitwig(padNum, 0);
+					sendButtonHitToBitwig(padNum, padStates[padNum].pressure);
 				}	
 			}
 			else if(vertex == "y")  {
@@ -132,7 +138,9 @@ function tryAsDrumPadPosData(padNum, vertex, position)  {
 					drumHitsData[padNum].xHitPos = padStates[padNum].xPos;
 					drumHitsData[padNum].yHitPos = padStates[padNum].yPos;
 
-					sendPadHitToBitwig(padNum, padStates[padNum].pressure);
+					// sendPadHitToBitwig(padNum, padStates[padNum].pressure);
+					sendButtonHitToBitwig(padNum, 0);
+					sendButtonHitToBitwig(padNum, padStates[padNum].pressure);
 				}	
 			}
 		}
@@ -176,7 +184,7 @@ function padHeld(padNum)  {
 ******************************/
 
 function showDrumPage() {
-	drumPageUpdateSoloLED(selectedTrack);  }
+	drumPageUpdateSoloLED(MDI_focusedLiveTrack);  }
 
 
 
@@ -272,7 +280,7 @@ function drumPageUpdateVU(trackNum)  {
 	var out = getRangedVU(trackNum);
 	setPadLED(index, out);
 
-	if(selectedTrack == trackNum)  {
+	if(MDI_focusedLiveTrack == trackNum)  {
 		sendMidi(176, 5, out);
 	}
 
@@ -281,7 +289,7 @@ function drumPageUpdateVU(trackNum)  {
 
 
 function drumPageUpdateSoloLED(trackNum)  {
-	if(selectedTrack == trackNum)  {
+	if(MDI_focusedLiveTrack == trackNum)  {
 		var color = LIGHT_GREEN;
 		if(trackSolos[trackNum] != null && trackSolos[trackNum].status == true) {  color = YELLOW;  }
 

@@ -18,7 +18,7 @@ var MDI_liveBankPosition = 0;
 var MDI_focusedLiveTrack = 0;
 
 var MDI_superBank;
-var MDI_seleced_track = 0;
+var MDI_selected_track = 0;
 
 var MDI_master_track;
 
@@ -218,7 +218,7 @@ function createNameObserver(trackIndex)  {
 function createSelectObserver(track)  {
     return function(value)  {
         if(value == true) {
-            MDI_seleced_track = track;  
+            MDI_selected_track = track;  
 }   }   }
 
 

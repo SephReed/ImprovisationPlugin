@@ -66,13 +66,14 @@ function hitClip(trackNum, sceneNum)  {
     if(HAS_CONTENT[index] == false)  {
       if(currentPage == CLIP_PAGE)  {
         armSingleLiveTrack(trackNum);  }
-      MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().record(sceneNum);
-      // pageAutoSwitch = new CurrentlyRecording(trackNum, sceneNum); 
-      pageAutoSwitch.track = trackNum;
-      pageAutoSwitch.scene = sceneNum;
-      pageAutoSwitch.status = RECORDING_QUEUED;
-      println("recording queued");
-        setPage(DRUM_PAGE);
+        MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().record(sceneNum);
+        // pageAutoSwitch = new CurrentlyRecording(trackNum, sceneNum); 
+        // pageAutoSwitch.track = trackNum;
+        // pageAutoSwitch.scene = sceneNum;
+        // pageAutoSwitch.status = RECORDING_QUEUED;
+        println("recording queued");
+        // setPage(DRUM_PAGE);
+        MDI_setPage(DRUM_PAGE);
 
          //if the scene being recorded in is the last visible one, automatically scroll
          //the clips so there will be another empty one available

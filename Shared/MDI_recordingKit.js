@@ -22,8 +22,6 @@ function MDI_initializeRecordingFunctionality() {
         clipLauncher.addIsRecordingQueuedObserver(MDI_createRecordingQueuedObserver(t));
         clipLauncher.addIsRecordingObserver(MDI_createRecordingObserver(t));
     }
-
-    MDI_initializeBitwigHaxFunctionality();
 }
 
 
@@ -151,7 +149,7 @@ function createArmObserver(track)  {
             // MDI_focusedLiveTrack = track;
             // println("Set focus "+track);
             if(previouslyMultiArmed){
-                tryReleasingStalledMidi();
+                // tryReleasingStalledMidi();
             }
         }
             // tryReleasingStalledPadNotes();  }
@@ -185,7 +183,9 @@ function armSingleLiveTrack(trackNum)  {
         println("track check for "+t+"!="+trackNum+" && "+liveTrackArms[t]);
         if(t != trackNum && liveTrackArms[t] == true) 
         { MDI_liveBank[t].getTrack(t).getArm().set(false);  }
-}   }
+    }   
+    MDI_liveBank[trackNum].getTrack(trackNum).select();
+}
 
 //---------------------------------------------------------------------------
 

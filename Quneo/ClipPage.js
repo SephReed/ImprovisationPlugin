@@ -51,7 +51,8 @@ function tryAsClipCornerTrigger(x, y, velocity)  {
 	else if(x == 2) {
 		if(squareButton.held == true) {
 			squareButton.numUses++;
-			TRACK_BANKS[trackNum].getTrack(trackNum).stop();  }
+			getTrackFromBank(trackNum).stop();  }
+			// TRACK_BANKS[trackNum].getTrack(trackNum).stop();  }
 		else {
 			selectTrackFromBank(trackNum);  }
 	}
@@ -73,14 +74,14 @@ function tryAsClipButtonData(data1, data2)  {
 		switch(data1) {
 		   //scene bank for track left
 			case VERT_ARROW_1_UP:
-				if(trackSceneSelectPositions[selectedTrack] > 0) {
-					TRACK_BANKS[selectedTrack].scrollScenesUp();  
-					trackSceneSelectPositions[selectedTrack]--;   }
+				if(trackSceneSelectPositions[MDI_selected_track] > 0) {
+					TRACK_BANKS[MDI_selected_track].scrollScenesUp();  
+					trackSceneSelectPositions[MDI_selected_track]--;   }
 				break;
 
 		   //scene bank for track right
 			case VERT_ARROW_1_DOWN:
-				attemptScrollSceneUp(selectedTrack);  break;
+				attemptScrollSceneUp(MDI_selected_track);  break;
 			
 		   //scroll scene bank down 1 track
 			case VERT_ARROW_2_DOWN:
@@ -122,7 +123,7 @@ function showClipPage() {
 
 //calls the three led functions for select, solo, and mute
 function showTrackSettings(t)  {
-	setTrackSelectLED(t, t == selectedTrack);
+	setTrackSelectLED(t, t == MDI_focusedLiveTrack);
 	setTrackSoloLED(t, trackSolos[t].status);
 	setTrackMuteLED(t, trackMutes[t].status);   }
 
@@ -194,7 +195,7 @@ function clipPageUpdateVU(trackNum)  {
 	var out = getRangedVU(trackNum);
 	setPadLED(index, out);
 
-	if(selectedTrack == trackNum)  {
+	if(MDI_focusedLiveTrack == trackNum)  {
 		sendMidi(176, 5, out);
 	}
 
@@ -233,14 +234,14 @@ function updateClipPageAnimationsToBeatTime() {
 	var ratio = (beatPosition%loopLength) / loopLength;
 
 	if(blinkOn == false && ratio < ratioThreshold) {
-		var offset = selectedTrack * 8;
+		var offset = MDI_focusedLiveTrack * 8;
 		setPadLED(offset, OFF);
 		setPadLED(offset + 1, OFF);
 		setPadLED(offset + 2, OFF);
 		blinkOn = true;
 	}
 	else if(blinkOn == true && ratio > ratioThreshold) {
-		showTrackSettings(selectedTrack); 
+		showTrackSettings(MDI_focusedLiveTrack); 
 
 		blinkOn = false ;
 }	}

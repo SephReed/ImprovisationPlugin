@@ -68,19 +68,14 @@ function init() {
 
 	MDI_initializeLiveBank();
 	MDI_initializeRecordingFunctionality();
-	// for(var i = 0; i < LIVE_BANK_HEIGHT; i++) {
-	// 	TRACK_BANKS[i] = host.createTrackBank(LIVE_BANK_HEIGHT, MAX_MODABLE_SENDS, MAX_SCENES);
-	// 	for(var i_s = 0; i_s < i; i_s++) 
-	// 	{	TRACK_BANKS[i].scrollScenesDown();  }
-	// }
 
    //add observers for updating *shared variables*
 	transport.getTempo().addValueObserver(777, function(i_tempo){
 		tempo = i_tempo;  });
 
 	transport.addIsPlayingObserver(function(value)  {
-		pageAutoSwitch.status = RECORDING_OFF;
-		pageAutoSwitch.nextTrack = -1;
+		// pageAutoSwitch.status = RECORDING_OFF;
+		// pageAutoSwitch.nextTrack = -1;
     	currentlyPlaying = value;  });
 
 	transport.getPosition().addRawValueObserver(function(newPos)  {

@@ -17,9 +17,9 @@
 // var trackVolumes = initArray(0, MAX_TRACKS);
 // var trackSends = initArray(0, MAX_TRACKS * MODABLE_SENDS);
 // var trackMacros = initArray(0, MAX_TRACKS * MAX_DEVICES * 8);
-// var selectedSendPages = initArray(1, MAX_TRACKS);
+var selectedSendPages = initArray(1, SUPER_BANK_MAX_TRACKS);
 // var deviceBanks = initArray(null, MAX_TRACKS);
-// var macroPages = initArray(0, MAX_TRACKS * 4);
+var macroPages = initArray(0, SUPER_BANK_MAX_TRACKS * 4);
 // var selectedTrack = 0;
 
 // var volumeSlides = [];
@@ -81,18 +81,18 @@ function tryAsTrackCCData(data1, data2)  {
 		// 	getTrackFromBank(selectedTrack).getVolume().set(data2, 127);  
 		// }
 
-		getTrackFromBank(selectedTrack).getVolume().set(data2, 128);  
+		getTrackFromBank(MDI_focusedLiveTrack).getVolume().set(data2, 128);  
 	}
 
    //Then Fourth Vertical VU has a value of 4, so the only thing less than 4 which
    //is not a VU for track sends is the volume
    //There are three pages for track sends
 	else if (data1 <= VERT_VU_4)  {
-		var track = getTrackFromBank(selectedTrack);
+		var track = getTrackFromBank(MDI_focusedLiveTrack);
 		if(track != null) {
 			  //
 			var sendNum = data1-1;
-			sendNum += (selectedSendPages[selectedTrack]-1) * 3;
+			sendNum += (selectedSendPages[MDI_selected_track]-1) * 3;
 
 			var send = track.getSend(sendNum);
 			
@@ -106,10 +106,10 @@ function tryAsTrackCCData(data1, data2)  {
 		var VU_num = data1 % HOR_VU_1;
 		var macroNum = VU_num;
 
-		if(macroPages[selectedTrack * 4 + VU_num] == 1) {
+		if(macroPages[MDI_focusedLiveTrack * 4 + VU_num] == 1) {
 			macroNum += 4;  }
 			
-		deviceBanks[selectedTrack].getDevice(0).getMacro(macroNum).getAmount().set(data2, 128);
+		deviceBanks[MDI_focusedLiveTrack].getDevice(0).getMacro(macroNum).getAmount().set(data2, 128);
 }	}
 
 //---------------------------------------------------------------------------
@@ -121,25 +121,25 @@ function tryAsTrackCCData(data1, data2)  {
 function tryAsTrackButtonData(data1, data2)  {
 	if(data2 > 0)  {
 		if(data1 == DARTH_NOSE_BUTTON)  {
-			if(selectedSendPages[selectedTrack] == 1) { selectedSendPages[selectedTrack] = 2; }
-			else if(selectedSendPages[selectedTrack] == 2) { selectedSendPages[selectedTrack] = 3; }
-			else {  selectedSendPages[selectedTrack] = 1;  }
+			if(selectedSendPages[MDI_selected_track] == 1) { selectedSendPages[MDI_selected_track] = 2; }
+			else if(selectedSendPages[MDI_selected_track] == 2) { selectedSendPages[MDI_selected_track] = 3; }
+			else {  selectedSendPages[MDI_selected_track] = 1;  }
 
-			showSendsForTrack(selectedTrack);
-			showDarthNose(selectedTrack);
+			showSendsForTrack(MDI_selected_track);
+			showDarthNose(MDI_selected_track);
 		}
 
 		else if(data1 >= HOR_ARROW_1_LEFT && data1 <= HOR_ARROW_4_RIGHT) {
 			arrowButton = data1 - HOR_ARROW_1_LEFT;
 
-			var macPageIndex = (selectedTrack*4) + Math.floor(arrowButton / 2);
+			var macPageIndex = (MDI_selected_track*4) + Math.floor(arrowButton / 2);
 			var macPage = arrowButton % 2;
 
 			println(macPageIndex + " " + macPage);
 
 			macroPages[macPageIndex] = macPage;
-			showMacroPages(selectedTrack);
-			showMacrosForTrack(selectedTrack);
+			showMacroPages(MDI_selected_track);
+			showMacrosForTrack(MDI_selected_track);
 }	}	}
 
 
