@@ -23,11 +23,18 @@ function initializeBitwigObservers()  {
 
 
     deviceBanks[t] = track.createDeviceBank(1);
-    for(var m = 0; m < MAX_MODABLE_MACROS; m++) {
-      deviceBanks[t].getDevice(0).getMacro(m).getAmount().addValueObserver(127, createMacroObserver(t, m));  }
+    // for(var m = 0; m < MAX_MODABLE_MACROS; m++) {
+			
+    //   deviceBanks[t].getDevice(0).getMacro(m).getAmount().addValueObserver(127, createMacroObserver(t, m));  
+		// }
+		const remoteControls = deviceBanks[t].getDevice(0).createCursorRemoteControlsPage(MAX_MODABLE_MACROS);
+		for(var m = 0; m < MAX_MODABLE_MACROS; m++) {
+			remoteControls.getParameter(m).addValueObserver(127, createMacroObserver(t, m));
+		}
 
     for(var s = 0; s < MAX_MODABLE_SENDS; s++) {
-      track.getSend(s).addValueObserver(127, createSendObserver(t, s));  }
+      track.getSend(s).addValueObserver(127, createSendObserver(t, s));  
+		}
 
 		// createMeasureEndCarpetBomb(track);
 	}

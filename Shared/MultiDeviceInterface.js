@@ -62,8 +62,9 @@ function MDI_initializeLiveBank() {
         var track = MDI_liveBank[t].getTrack(t);
         track.getArm().addValueObserver(createArmObserver(t));
         track.addIsSelectedInEditorObserver(MDI_createSelectObserver(t));
-        for(var i_s = 0; i_s < t; i_s++) 
-        {   MDI_liveBank[t].scrollScenesDown();  }
+        for(var i_s = 0; i_s < t; i_s++) {   
+            MDI_liveBank[t].scrollScenesDown();  
+        }
     }
 }
 
@@ -75,6 +76,11 @@ function scrollPage() {
     if(currentPage == DRUM_PAGE) {  MDI_setPage(CLIP_PAGE);  }
     else if(currentPage == CLIP_PAGE) {  MDI_setPage(CONDUCTOR_PAGE);  }
     else {  MDI_setPage(DRUM_PAGE);  }
+}
+
+
+function MDI_getCurrentPage() {
+    return currentPage;
 }
 
 

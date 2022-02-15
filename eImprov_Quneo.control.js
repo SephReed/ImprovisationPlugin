@@ -25,7 +25,7 @@
 /******************************
 *     DEPENDENCIES:
 ******************************/
-loadAPI(1);
+loadAPI(10);
 load("Shared/MultiDeviceInterface.js")
 load("Shared/BitwigConstants.js")
 load("Quneo/QUNEO_init.js")
@@ -61,6 +61,16 @@ var application = null;
 *           MAIN:
 ******************************/
 function init() {
+	/******************************
+	*      SETTINGS
+	******************************/
+	const Settings = host.getDocumentState();
+	const SETTINGS = {
+		groupTrackArmsByColor: Settings.getBooleanSetting("Track Arming", "Group by Color", false).get()
+	}
+
+	println(SETTINGS.groupTrackArmsByColor);
+
    //initialize all *shared variables*
 	application = host.createApplication();
 

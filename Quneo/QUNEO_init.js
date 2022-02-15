@@ -98,8 +98,10 @@ host.addDeviceNameBasedDiscoveryPair(quneoPortNames, quneoPortNames);
 function quneoInit()  {
 	// animateThumbzSymbol();
 
-   //further *Quneo Host* definining
-   	host.println(QUNEO_LOAD_MSG);
+	
+
+  //further *Quneo Host* definining
+  host.println(QUNEO_LOAD_MSG);
 	host.getMidiInPort(0).setMidiCallback(onMidi);
 
 	MDI_registerButtons(16, function(buttonNum) {
@@ -115,26 +117,27 @@ function quneoInit()  {
 		return midiNum; 
 	});
 
-	// MDI_registerButtons(16);
+	// // MDI_registerButtons(16);
 
-	// var test = host.getPreferences().getStringSetting("Engage", null, 25, "Hello World");
+	// // var test = host.getPreferences().getStringSetting("Engage", null, 25, "Hello World");
 	
 	QUNEONoteIn = host.getMidiInPort(0).createNoteInput("QUNEO", "82????", "92????");
 	QUNEONoteIn.setShouldConsumeEvents(false);
 
 	MDI_initializeBitwigHaxFunctionality(QUNEONoteIn);
 
-	for(var i = 0; i < LIVE_BANK_HEIGHT; i++){
+	for (var i = 0; i < LIVE_BANK_HEIGHT; i++) {
 		trackSolos[i] = new ToggleableButton(i, TGL_BTN_SOLO);
-		trackMutes[i] = new ToggleableButton(i, TGL_BTN_MUTE);  }
+		trackMutes[i] = new ToggleableButton(i, TGL_BTN_MUTE);  
+	}
 
-	for(var i = 0; i < padStates.length; i++)  {
-		padStates[i] = new PadState(i);   }
+	for (var i = 0; i < padStates.length; i++) {
+		padStates[i] = new PadState(i);   
+	}
 	
 	initializeBitwigInterface();
 	octaveHandlerInit();
 	MDI_addPageObserver(setPage);
-	// setPage(CLIP_PAGE);
 }
 
 
@@ -174,6 +177,7 @@ function onMidi(status, data1, data2) {
 
 			else if(data1 < 40) {  
 				vertex = "x";
+				// println(data1, padNum);
 				padStates[padNum].setXPos(data2);  }
 
 			else if(data1 < 60) {  
@@ -639,6 +643,9 @@ function clearPadLEDS() {
 //there are 64 leds
 function setPadLED(index, color) {
 	var midiNum = getMidiNumFromIndex(index);
+	if (midiNum < 0 || midiNum > 127) {
+		return;
+	}
 	sendMidi(146, midiNum, color);
 }
 
@@ -748,8 +755,9 @@ function updateEyesAndTriangleToBeatTime() {
 	value = 127 - value;
 
    //play button blinks hard every two beats, soft every beat
-	var playButton = ((2*value)%127) * 80/127;
-		playButton += ((4*value)%127) * 40/127;
+	let playButton = ((2*value)%127) * 80/127;
+	playButton += ((4*value)%127) * 40/127;
+	playButton = Math.round(playButton);
 	sendMidi(144, 35, playButton);
 
    //when a recording is in process, the spinners show the measure position.  rec button blinks.
@@ -758,7 +766,8 @@ function updateEyesAndTriangleToBeatTime() {
 
 		// println(recStatus.recTrack+" "+recStatus.queuedTrack);
 
-		var recBut = (4*value)%127;
+		let recBut = (4*value)%127;
+		recBut = Math.round(recBut);
 		if(recBut < 100) { recBut = 0;  }
 		sendMidi(144, 33, recBut);
 

@@ -57,33 +57,40 @@ function initializeBitwigInterface()  {
 //if a space has a clip launch or relaunch it
 function hitClip(trackNum, sceneNum)  {
    //delete clip
+  println("square" + squareButton.held);
   if(squareButton.held == true)  {
     squareButton.numUses++;
-    removeClip(trackNum, sceneNum);  }
-  else  {
+    removeClip(trackNum, sceneNum);  
+  } else {
     var index = (trackNum*LIVE_BANK_WIDTH)+sceneNum;
      //record clip
-    if(HAS_CONTENT[index] == false)  {
-      if(currentPage == CLIP_PAGE)  {
-        armSingleLiveTrack(trackNum);  }
-        MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().record(sceneNum);
-        // pageAutoSwitch = new CurrentlyRecording(trackNum, sceneNum); 
-        // pageAutoSwitch.track = trackNum;
-        // pageAutoSwitch.scene = sceneNum;
-        // pageAutoSwitch.status = RECORDING_QUEUED;
-        println("recording queued");
-        // setPage(DRUM_PAGE);
-        MDI_setPage(DRUM_PAGE);
+    if (HAS_CONTENT[index] == false) {
+      if(currentPage == CLIP_PAGE) {
+        armSingleLiveTrack(trackNum); 
+      }
+      MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().record(sceneNum);
+      // pageAutoSwitch = new CurrentlyRecording(trackNum, sceneNum); 
+      // pageAutoSwitch.track = trackNum;
+      // pageAutoSwitch.scene = sceneNum;
+      // pageAutoSwitch.status = RECORDING_QUEUED;
+      println("recording queued");
+      // setPage(DRUM_PAGE);
+      MDI_rememberRecEntryPoint();
+      MDI_setPage(DRUM_PAGE);
 
-         //if the scene being recorded in is the last visible one, automatically scroll
-         //the clips so there will be another empty one available
-        if(sceneNum == LIVE_BANK_WIDTH - 1)  {
-          attemptScrollSceneUp(trackNum);  }
+        //if the scene being recorded in is the last visible one, automatically scroll
+        //the clips so there will be another empty one available
+      if(sceneNum == LIVE_BANK_WIDTH - 1)  {
+        attemptScrollSceneUp(trackNum);  
       }
 
-       //launch clip
-      else  {  MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().launch(sceneNum);  }
-} }
+
+    //launch clip
+    } else {
+      MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().launch(sceneNum);
+    }
+  } 
+}
 
 //---------------------------------------------------------------------------
 
@@ -115,7 +122,15 @@ function muteTrack(trackNum, state)  {
 function attemptScrollSceneUp(trackNum)  {
   if(trackSceneSelectPositions[trackNum] < totalScenesAvailable - LIVE_BANK_WIDTH) {
     MDI_liveBank[trackNum].scrollScenesDown();  
-    trackSceneSelectPositions[trackNum]++;  }
+    trackSceneSelectPositions[trackNum]++;  
+  }
+}
+
+function attemptScrollSceneDown(trackNum)  {
+  if(trackSceneSelectPositions[trackNum] > 0) {
+    MDI_liveBank[trackNum].scrollScenesUp();  
+    trackSceneSelectPositions[trackNum]--;  
+  }
 }
 
 //---------------------------------------------------------------------------
@@ -125,8 +140,8 @@ function attemptScrollSceneUp(trackNum)  {
 //if your clip is in the right area, it selects a clip and delete's it
 //Bitwig requires clipLauncher.delete(sceneNum) for this to be done correctly
 function removeClip(trackNum, sceneNum)  {
-  MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().select(sceneNum);
-  application.remove(); 
+  MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().getItemAt(sceneNum).deleteObject();
+  // application.remove(); 
   // MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().createEmptyClip(sceneNum, 0);
   var clipIndex = (trackNum*LIVE_BANK_WIDTH)+sceneNum;  
   HAS_CONTENT[clipIndex] = false;  

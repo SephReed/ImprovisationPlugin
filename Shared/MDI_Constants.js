@@ -38,12 +38,18 @@ var SUPER_BANK_MAX_TRACKS = 64;
 
 
 
+
 function RecordingStatus(){
 	this.queuedTrack = -1;
 	this.queuedScene = -1;
-   	this.recTrack = -1;
-   	this.recScene = -1;   
-	this.nextTrack = -1;  }
+  this.recTrack = -1;
+  this.recScene = -1;   
+	this.nextTrack = -1;
+	this.entryPage = null;  
+}
+
+
+
 
 
 

@@ -1,0 +1,23 @@
+{
+  "name": "eimprov",
+  "version": "1.0.0",
+  "description": "",
+  "main": "eImprov_12Step.control.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SephReed/eImprov.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SephReed/eImprov/issues"
+  },
+  "homepage": "https://github.com/SephReed/eImprov#readme",
+  "dependencies": {
+    "typed-bitwig-api": "^12.0.0",
+    "typescript": "^4.5.5"
+  }
+}

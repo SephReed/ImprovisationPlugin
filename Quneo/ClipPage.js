@@ -72,25 +72,17 @@ function tryAsClipButtonData(data1, data2)  {
 
 	if (data2 != 0) {
 		switch(data1) {
-		   //scene bank for track left
 			case VERT_ARROW_1_UP:
-				if(trackSceneSelectPositions[MDI_selected_track] > 0) {
-					TRACK_BANKS[MDI_selected_track].scrollScenesUp();  
-					trackSceneSelectPositions[MDI_selected_track]--;   }
-				break;
+				attemptScrollSceneUp(MDI_selected_track); break;
 
-		   //scene bank for track right
 			case VERT_ARROW_1_DOWN:
-				attemptScrollSceneUp(MDI_selected_track);  break;
+				attemptScrollSceneDown(MDI_selected_track);  break;
 			
-		   //scroll scene bank down 1 track
 			case VERT_ARROW_2_DOWN:
 				modLiveBankPosition(1);  break;
 
-		   //scroll scene bank up 1 track
 			case VERT_ARROW_2_UP:
 				modLiveBankPosition(-1);  break;
-
 		}
 	}
 
@@ -123,7 +115,10 @@ function showClipPage() {
 
 //calls the three led functions for select, solo, and mute
 function showTrackSettings(t)  {
-	setTrackSelectLED(t, t == MDI_focusedLiveTrack);
+	let selectMode = 0;
+	t === MDI_focusedLiveTrack && (selectMode = 2);
+	!selectMode && liveTrackArms[t] && (selectMode = 1);
+	setTrackSelectLED(t, selectMode);
 	setTrackSoloLED(t, trackSolos[t].status);
 	setTrackMuteLED(t, trackMutes[t].status);   }
 
@@ -167,12 +162,13 @@ function setTrackSoloLED(track, value) {
 
 //---------------------------------------------------------------------------
 
-//select led has two states.  on/off
+//select led has three states.  focus/arm/off
 function setTrackSelectLED(track, value) {
-	if(value != 0) {
-		setPadLED(track*8+2, RED)  }
-	else {
-		setPadLED(track*8+2, LIGHT_GREEN)  }
+	switch (value) {
+		case 2: setPadLED(track*8+2, RED); break;
+		case 1: setPadLED(track*8+2, ORANGE); break;
+		default: setPadLED(track*8+2, LIGHT_GREEN);
+	}
 }
 
 //---------------------------------------------------------------------------

@@ -168,7 +168,11 @@ function showTracknum(trackNum) {
 
 //not the VU, but the volume knob level
 function showVolume(trackNum) {
-	sendMidi(176, 1, trackVolumes[trackNum]);  }
+	if (trackNum >= trackVolumes.length) {
+		return;
+	}
+	sendMidi(176, 1, trackVolumes[trackNum]);  
+}
 
 //---------------------------------------------------------------------------
 
@@ -191,7 +195,8 @@ function showDarthNose(trackNum)  {
 //attemps to show all 9 sends
 function showSendsForTrack(trackNum, sendNum) {
 	for(var s = 0; s < MAX_MODABLE_SENDS; s++) {
-		showSend(trackNum, s);  }
+		showSend(trackNum, s);  
+	}
 }
 
 //---------------------------------------------------------------------------
@@ -199,12 +204,20 @@ function showSendsForTrack(trackNum, sendNum) {
 //find's the VU position relative to page
 //if the send is on this page, it get's shown
 function showSend(trackNum, sendNum) {
-	var VU_num = sendNum;
-	if(selectedSendPages[trackNum] == 2) {  VU_num -= 3;  }
-	else if(selectedSendPages[trackNum] == 3) {  VU_num -= 6;  }
 	
-	if(VU_num < 3 && VU_num >= 0)
-	{	sendMidi(176, 2 + VU_num, trackSends[trackNum * MAX_MODABLE_SENDS + sendNum]);    }
+	var VU_num = sendNum;
+	switch (selectedSendPages[trackNum]) {
+		case 2: VU_num -= 3; break;
+		case 3: VU_num -= 6; break;
+	}
+	
+	if(VU_num < 3 && VU_num >= 0) {	
+		const targetSend = trackNum * MAX_MODABLE_SENDS + sendNum;
+		if (targetSend >= trackSends.length) {
+			return;
+		}
+		sendMidi(176, 2 + VU_num, trackSends[targetSend]);    
+	}
 }
 
 
@@ -220,14 +233,18 @@ function showMacrosForTrack(trackNum)  {
 //currently shows this macro.  outputs if it does
 function showMacro(trackNum, macroNum)  {
 	var macroIndex = (trackNum * 8 + macroNum);
+	if (macroIndex >= trackMacros.length) {
+		return;
+	}
 	var out = trackMacros[macroIndex];
 
 	var macPage = macroPages[trackNum * 4 + (macroNum%4)];
 
-	if(macroNum < 4 &&  macPage == 0)  {
-		sendMidi(176, 11 - macroNum, out);   }
-	else if(macroNum < 8 && macPage == 1)  {
-		sendMidi(176, 11 - (macroNum%4), out);   }
+	if(macroNum < 4 &&  macPage == 0) {
+		sendMidi(176, 11 - macroNum, out);   
+	} else if(macroNum < 8 && macPage == 1) {
+		sendMidi(176, 11 - (macroNum%4), out);   
+	}
 }
 
 //---------------------------------------------------------------------------
