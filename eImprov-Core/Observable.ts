@@ -6,20 +6,27 @@ export type ObservableNeededFns<T> = {
 }
 
 
-export type ObservableArgs<T> = ObservableNeededFns<T>| {
+export type ObservableArgs<T> = ObservableNeededFns<T> | {
   param: API.Parameter | API.SettableBooleanValue | API.SettableBeatTimeValue;
-}
+} | { value: T }
 
 export type Observer<T> = (val: T) => void;
 
 export class Observable<T> {
   protected observers?: Array<Observer<T>>;
   protected currentVal: T = undefined as any;
-  protected neededFns: ObservableNeededFns<T>;
+  protected neededFns: ObservableNeededFns<T> | undefined;
   // protected valHistory: T[] = [];
 
   constructor(protected args: ObservableArgs<T>) {
-    if ("param" in args) {
+    if (!args) {
+      throw new Error(`Args required`);
+
+    } else if ("value" in args) {
+      this.currentVal = args.value;
+      this.init();
+
+    } else if ("param" in args) {
       const { param } = args;
       if ("toggle" in param) {
         this.neededFns = {
@@ -39,21 +46,32 @@ export class Observable<T> {
       }
     } else {
       this.neededFns = args;
+      this.init();
     }
   }
 
   public get value() { return this.currentVal; }
   public set value(newVal: T) {
-    this.neededFns.set(newVal);
+    if (this.currentVal === newVal) { return; }
+    if (this.neededFns) {
+      this.neededFns.set(newVal);
+    } else {
+      this.updateValAndDispatch(newVal);
+    }
   }
 
   public init() {
     if (this.observers) { return; }
     this.observers = [];
-    this.neededFns.listener((val) => {
-      this.currentVal = val;
-      this.observers!.forEach(cb => cb(val))
+    this.neededFns && this.neededFns.listener((val) => {
+      this.updateValAndDispatch(val);
     })
+  }
+
+  protected updateValAndDispatch(newVal: T) {
+    if (this.currentVal === newVal) { return; }
+    this.currentVal = newVal;
+    this.observers!.forEach(cb => cb(newVal))
   }
 
   public observe(cb: Observer<T | undefined>) {

@@ -169,12 +169,13 @@ function createArmObserver(track)  {
 function MDI_hitLiveBankClip(trackNum, sceneNum) {
   var index = (trackNum*LIVE_BANK_WIDTH)+sceneNum;
    //record clip
+  const clip = MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher();
+  // clip.select();
   if(HAS_CONTENT[index] == false)  {
-    MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().record(sceneNum);
-
-
+    clip.record(sceneNum);
+  } else {  
+    clip.launch(sceneNum);  
   }
-  else  {  MDI_liveBank[trackNum].getChannel(trackNum).getClipLauncher().launch(sceneNum);  }
 }
 
 
