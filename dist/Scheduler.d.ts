@@ -1,0 +1,20 @@
+import { BankId } from "./Banks";
+import { Observable } from "./Observable";
+export declare type ScheduleTime = "beat" | "measure";
+export declare type ScheduleAction = "mute" | "un-mute" | "solo" | "un-solo";
+export declare class Scheduler {
+    readonly isOnDownBeat: Observable<boolean>;
+    readonly isAtMeasureStart: Observable<boolean>;
+    init(): void;
+    schedule(args: {
+        bankId: BankId;
+        time: ScheduleTime;
+        action: ScheduleAction;
+        remove?: true;
+    }): string | undefined;
+    scheduleAll(args: {
+        time: ScheduleTime;
+        action: ScheduleAction;
+        remove?: true;
+    }): void;
+}

@@ -15,6 +15,7 @@
         constructor(args) {
             this.args = args;
             this.currentVal = undefined;
+            this.ignoreRepeatValues = true;
             if (!args) {
                 throw new Error(`Args required`);
             }
@@ -50,9 +51,12 @@
         }
         get value() { return this.currentVal; }
         set value(newVal) {
-            if (this.currentVal === newVal) {
+            if (this.ignoreRepeatValues && this.currentVal === newVal) {
                 return;
             }
+            this.forceSet(newVal);
+        }
+        forceSet(newVal) {
             if (this.neededFns) {
                 this.neededFns.set(newVal);
             }

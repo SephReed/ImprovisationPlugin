@@ -50,9 +50,15 @@ export class Observable<T> {
     }
   }
 
+  public ignoreRepeatValues: boolean = true;
+
   public get value() { return this.currentVal; }
   public set value(newVal: T) {
-    if (this.currentVal === newVal) { return; }
+    if (this.ignoreRepeatValues && this.currentVal === newVal) { return; }
+    this.forceSet(newVal);
+  }
+
+  public forceSet(newVal: T) {
     if (this.neededFns) {
       this.neededFns.set(newVal);
     } else {

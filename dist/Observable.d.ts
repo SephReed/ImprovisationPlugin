@@ -15,8 +15,10 @@ export declare class Observable<T> {
     protected currentVal: T;
     protected neededFns: ObservableNeededFns<T> | undefined;
     constructor(args: ObservableArgs<T>);
+    ignoreRepeatValues: boolean;
     get value(): T;
     set value(newVal: T);
+    forceSet(newVal: T): void;
     init(): void;
     protected updateValAndDispatch(newVal: T): void;
     observe(cb: Observer<T | undefined>): void;

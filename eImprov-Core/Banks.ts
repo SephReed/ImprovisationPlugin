@@ -1,6 +1,7 @@
 import { Clips } from "./Clips";
+import { eI } from "./eImprov";
 import { Observable } from "./Observable";
-import { SharedState } from "./SharedStates";
+import { SharedState, SHARED_STATE } from "./SharedStates";
 
 
 
@@ -16,6 +17,8 @@ export type SceneId = number | "SELECTED"
   | "PLAY_QUEUED" | "PLAYING" | "RECORDING" 
   | "RECORDING_QUEUED" | "STOP_QUEUED" | "FIRST_OPEN" 
   | "PLAYING_OR_SELECTED" | "LAST_CONTENT" | "FIRST_CONTENT";
+
+
 
 
 export type eIBankDecorators = {
@@ -50,7 +53,7 @@ export class Banks {
     return this._maxTracksAvailable.observe.bind(this._maxTracksAvailable);
   }
 
-  public readonly vars = new SharedState(this);
+  // public readonly vars = new SharedState(this);
   public readonly clips = new Clips(this);
 
   constructor(protected args: BanksArgs) {}
@@ -103,13 +106,13 @@ export class Banks {
   }
 
   public get nextRecordingBankNum() {
-    const out = this.vars.get("MASTER", "next");
+    const out = eI().vars.get("MASTER", SHARED_STATE.nextRecord);
     return out && out.value ? parseInt(out.value) : undefined;
   }
 
   public set nextRecordingBankNum(bankId: BankId | undefined) {
     const bankNum = bankId === undefined ? undefined : this.bankIdToNum(bankId);
-    this.vars.get("MASTER", "next")!.value = bankNum === undefined ? undefined : String(bankNum);
+    eI().vars.get("MASTER", SHARED_STATE.nextRecord)!.value = bankNum === undefined ? undefined : String(bankNum);
   }
 
   public bankIdToNum(bankId: BankId) {
@@ -148,7 +151,6 @@ export class Banks {
   public init() {
     this.initLiveBanks();
     this.clips.init();
-    this.vars.init();
     this._assertScroll = false;
   }
 
@@ -156,7 +158,7 @@ export class Banks {
     for (let t = 0; t < this.height; t++) {
       const bitwigBank = host.createTrackBank(1, this.args.sends, this.width);
       const track = bitwigBank.getItemAt(0);
-      const params = track.createDeviceBank(1).getItemAt(0).createCursorRemoteControlsPage(8);
+      const params = track.createDeviceBank(1).getItemAt(0).createCursorRemoteControlsPage(9);
 
       if (t === 0) {
         bitwigBank.channelCount().addValueObserver((num) => {
@@ -173,11 +175,13 @@ export class Banks {
       const endDeviceBank = track.createDeviceBank(1);
       track.exists().markInterested();
       track.volume().markInterested();
+      track.mute().markInterested();
+      track.solo().markInterested();
       
       endDeviceBank.itemCount().markInterested();
       endDeviceBank.scrollPosition().markInterested();
-      
-      const endParams = endDeviceBank.getItemAt(0).createCursorRemoteControlsPage(8);
+
+      const endParams = endDeviceBank.getItemAt(0).createCursorRemoteControlsPage(9);
       endParams.hasNext().markInterested();
 
       let skipFirst = false;
@@ -258,6 +262,33 @@ export class Banks {
   public getSolo(bankId: BankId) {
     this.getTrack(bankId).solo().get();
   }
+
+  // public schedule(args: {
+  //   bankId: BankId;
+  //   time: "beat" | "measure";
+  //   action: "mute" | "un-mute" | "solo" | "un-solo";
+  //   remove?: true;
+  // }) {
+  //   const store = this.vars.get(args.bankId, args.time === "beat" ?  SHARED_STATE.onBeat : SHARED_STATE.onMeasure);
+  //   if (!store.value) { return store.value = args.action }
+
+  //   let values = store.value.split(",");
+  //   if (values.includes(args.action)) { 
+  //     if (args.remove !== true) { return; }
+  //     return store.value = values.filter(it => it !== args.action).join(",");
+  //   } else if (args.remove) {
+  //     return;
+  //   }
+  //   values.push(args.action);
+  //   store.value = values.filter(it => {
+  //     return it !== {
+  //       "mute": "un-mute",
+  //       "un-mute": "mute",
+  //       "solo": "un-solo",
+  //       "un-solo": "solo"
+  //     }[args.action];
+  //   }).join(",");
+  // }
 
 
   public arm(bankId: BankId) {

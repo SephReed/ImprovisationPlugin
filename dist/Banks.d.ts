@@ -1,7 +1,6 @@
 /// <reference types="typed-bitwig-api" />
 import { Clips } from "./Clips";
 import { Observable } from "./Observable";
-import { SharedState } from "./SharedStates";
 export interface BanksArgs {
     height: number;
     width: number;
@@ -28,7 +27,6 @@ export declare class Banks {
     protected _maxTracksAvailable: Observable<number>;
     get maxTracksAvailable(): number;
     get observeMaxTracksAvailable(): (cb: import("./Observable").Observer<number | undefined>) => void;
-    readonly vars: SharedState;
     readonly clips: Clips;
     constructor(args: BanksArgs);
     protected _assertScroll: boolean;

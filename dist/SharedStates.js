@@ -9,8 +9,14 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SharedState = void 0;
+    exports.SharedState = exports.SHARED_STATE = void 0;
     const Observable_1 = require("./Observable");
+    var SHARED_STATE;
+    (function (SHARED_STATE) {
+        SHARED_STATE["onBeat"] = "onB";
+        SHARED_STATE["onMeasure"] = "onM";
+        SHARED_STATE["nextRecord"] = "next";
+    })(SHARED_STATE = exports.SHARED_STATE || (exports.SHARED_STATE = {}));
     class SharedState {
         constructor(banks) {
             this.banks = banks;
@@ -20,16 +26,25 @@
         init() {
             this.banks.allTracks.forEach((track, bankNum) => {
                 track.name().addValueObserver((name) => {
-                    const bankVars = this.vars.get(bankNum);
-                    if (!bankVars) {
-                        return;
-                    }
                     const keyPairs = this.nameToKeyPairs(name);
-                    if (!keyPairs) {
-                        return;
+                    if (!this.vars.has(bankNum)) {
+                        if (!keyPairs) {
+                            return;
+                        }
+                        this.vars.set(bankNum, new Map());
                     }
+                    const bankVars = this.vars.get(bankNum);
                     for (const key of bankVars.keys()) {
-                        bankVars.get(key).value = keyPairs[key];
+                        bankVars.get(key).value = keyPairs ? keyPairs[key] : undefined;
+                        keyPairs && delete keyPairs[key];
+                    }
+                    if (keyPairs) {
+                        println(bankNum + "--" + JSON.stringify(keyPairs));
+                        for (const key in keyPairs) {
+                            const addMe = new Observable_1.Observable({ value: keyPairs[key] });
+                            addMe.onChange(() => this.syncBankName(bankNum));
+                            bankVars.set(key, addMe);
+                        }
                     }
                 });
             });
@@ -42,6 +57,7 @@
             const bankVars = this.vars.get(bankNum);
             if (!bankVars.has(varName)) {
                 const addMe = new Observable_1.Observable({ value: undefined });
+                addMe.ignoreRepeatValues = false;
                 addMe.init();
                 bankVars.set(varName, addMe);
                 const keyPairs = this.nameToKeyPairs(this.banks.getTrack(bankNum).name().get());
@@ -49,6 +65,9 @@
                 addMe.onChange(() => this.syncBankName(bankNum));
             }
             return bankVars.get(varName);
+        }
+        entries() {
+            return Array.from(this.vars.entries());
         }
         nameToKeyPairs(name) {
             const match = name.match(/\{(.+)}/);

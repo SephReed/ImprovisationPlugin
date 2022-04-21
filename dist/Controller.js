@@ -224,6 +224,7 @@
                 catch (err) {
                     host.showPopupNotification("Error caught.  See Console.");
                     println(`ERR: ` + err);
+                    println((new Error()).stack + "");
                 }
             });
         }

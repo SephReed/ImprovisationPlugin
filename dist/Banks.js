@@ -4,13 +4,14 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./Clips", "./Observable", "./SharedStates"], factory);
+        define(["require", "exports", "./Clips", "./eImprov", "./Observable", "./SharedStates"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Banks = void 0;
     const Clips_1 = require("./Clips");
+    const eImprov_1 = require("./eImprov");
     const Observable_1 = require("./Observable");
     const SharedStates_1 = require("./SharedStates");
     ;
@@ -20,7 +21,7 @@
             this.liveBanks = [];
             this._selectedBankNum = new Observable_1.Observable({ value: 0 });
             this._maxTracksAvailable = new Observable_1.Observable({ value: 0 });
-            this.vars = new SharedStates_1.SharedState(this);
+            // public readonly vars = new SharedState(this);
             this.clips = new Clips_1.Clips(this);
             this._assertScroll = false;
         }
@@ -79,12 +80,12 @@
             return this.clips.all.some((clip) => clip.isRecording().get());
         }
         get nextRecordingBankNum() {
-            const out = this.vars.get("MASTER", "next");
+            const out = (0, eImprov_1.eI)().vars.get("MASTER", SharedStates_1.SHARED_STATE.nextRecord);
             return out && out.value ? parseInt(out.value) : undefined;
         }
         set nextRecordingBankNum(bankId) {
             const bankNum = bankId === undefined ? undefined : this.bankIdToNum(bankId);
-            this.vars.get("MASTER", "next").value = bankNum === undefined ? undefined : String(bankNum);
+            (0, eImprov_1.eI)().vars.get("MASTER", SharedStates_1.SHARED_STATE.nextRecord).value = bankNum === undefined ? undefined : String(bankNum);
         }
         bankIdToNum(bankId) {
             switch (bankId) {
@@ -119,14 +120,13 @@
         init() {
             this.initLiveBanks();
             this.clips.init();
-            this.vars.init();
             this._assertScroll = false;
         }
         initLiveBanks() {
             for (let t = 0; t < this.height; t++) {
                 const bitwigBank = host.createTrackBank(1, this.args.sends, this.width);
                 const track = bitwigBank.getItemAt(0);
-                const params = track.createDeviceBank(1).getItemAt(0).createCursorRemoteControlsPage(8);
+                const params = track.createDeviceBank(1).getItemAt(0).createCursorRemoteControlsPage(9);
                 if (t === 0) {
                     bitwigBank.channelCount().addValueObserver((num) => {
                         this._maxTracksAvailable.value = num;
@@ -140,9 +140,11 @@
                 const endDeviceBank = track.createDeviceBank(1);
                 track.exists().markInterested();
                 track.volume().markInterested();
+                track.mute().markInterested();
+                track.solo().markInterested();
                 endDeviceBank.itemCount().markInterested();
                 endDeviceBank.scrollPosition().markInterested();
-                const endParams = endDeviceBank.getItemAt(0).createCursorRemoteControlsPage(8);
+                const endParams = endDeviceBank.getItemAt(0).createCursorRemoteControlsPage(9);
                 endParams.hasNext().markInterested();
                 let skipFirst = false;
                 endDeviceBank.itemCount().addValueObserver((count) => {
@@ -214,6 +216,31 @@
         getSolo(bankId) {
             this.getTrack(bankId).solo().get();
         }
+        // public schedule(args: {
+        //   bankId: BankId;
+        //   time: "beat" | "measure";
+        //   action: "mute" | "un-mute" | "solo" | "un-solo";
+        //   remove?: true;
+        // }) {
+        //   const store = this.vars.get(args.bankId, args.time === "beat" ?  SHARED_STATE.onBeat : SHARED_STATE.onMeasure);
+        //   if (!store.value) { return store.value = args.action }
+        //   let values = store.value.split(",");
+        //   if (values.includes(args.action)) { 
+        //     if (args.remove !== true) { return; }
+        //     return store.value = values.filter(it => it !== args.action).join(",");
+        //   } else if (args.remove) {
+        //     return;
+        //   }
+        //   values.push(args.action);
+        //   store.value = values.filter(it => {
+        //     return it !== {
+        //       "mute": "un-mute",
+        //       "un-mute": "mute",
+        //       "solo": "un-solo",
+        //       "un-solo": "solo"
+        //     }[args.action];
+        //   }).join(",");
+        // }
         arm(bankId) {
             const bankNum = this.bankIdToNum(bankId);
             const item = this.getTrack(bankNum);

@@ -5,13 +5,18 @@ const $ = require("../dist/index.js");
 const Quneo = require("./QuneoController.js");
 
 
+const USER_SETTINGS = {
+  bigSlider: "endParam8", // "volume"
+}
+
+
 const controller = new Quneo.QuneoController();
 
 function init() {
   const ei = new $.eImprov({
     banks: {
       height: 24,
-      width: 7,
+      width: 6,
       sends: 8
     }
   });
@@ -48,13 +53,7 @@ function init() {
   // ---- INIT ----
 
   const { playPos, isPlaying } = ei.params;
-
-  const onBeat = new $.Observable({value: false});
   playPos.init();
-  playPos.observe((pos) => {
-    onBeat.value = (pos % 1) < (1/2);
-  });
-
   isPlaying.init();
   
   controller.init(); 
@@ -88,7 +87,7 @@ function init() {
   setupTrackVUMeters();
 
 
-  // ----- ACTION LISTENERS
+  // ----- SHARED ACTION
 
   function trackSelectorPressState(bankNum, isPressed) {
     if (isPressed) {
@@ -114,11 +113,14 @@ function init() {
     }
   }
 
-  controller.onMidi((midi) => {
-    println(midi.toString());
-    // const action = controller.findActionFromMidi(midi);
-    // println(!action ? `No action for ${midi.toString()}` : action.name)
-  });
+
+  // ----- ACTION LISTENERS
+
+  // controller.onMidi((midi) => {
+  //   println(midi.toString());
+  //   // const action = controller.findActionFromMidi(midi);
+  //   // println(!action ? `No action for ${midi.toString()}` : action.name)
+  // });
 
   
 
@@ -188,22 +190,33 @@ function init() {
         trackSelectorPressState(row, isPressed);
       }
     });
-    for (let col = 1; col < 8; col++) {
+    controller.onPadRowColAction({row, col: 1 }, (isPressed) => {
+      if (padMode.value === "clip") {
+        if (isPressed) {
+          if (ei.banks.getTrack(row).mute().get()) {
+            ei.schedule({ bankId: row, time: "measure", action: "un-mute"});
+          } else {
+            ei.schedule({ bankId: row, time: "measure", action: "mute"});
+          }
+        }
+      }
+    });
+    for (let col = 2; col < 8; col++) {
       controller.onPadRowColAction({row, col }, (isPressed) => {
+        const sceneId = col - 2;
         if (padMode.value === "clip") {
           if (isPressed) {
             if (squareBtn.isOn) {
-              ei.banks.clips.clearSlot(row, col - 1);
+              ei.banks.clips.clearSlot(row, sceneId);
   
             } else if (octUp.isOn || octDown.isOn) {
-              ei.banks.clips.transpose({ bankId: row, sceneId: col, steps: octUp.isOn ? 12 : -12 })
+              ei.banks.clips.transpose({ bankId: row, sceneId, steps: octUp.isOn ? 12 : -12 })
   
             } else if (loopHalf.isOn || loopDouble.isOn) {
-              ei.banks.clips.modifyLoopLength({ bankId: row, sceneId: col, modAmount: loopHalf.isOn ? 1/2 : 2 })
+              ei.banks.clips.modifyLoopLength({ bankId: row, sceneId, modAmount: loopHalf.isOn ? 1/2 : 2 })
             
             } else {
-              const slot = ei.banks.clips.getSlot(row, col - 1);
-              const outcome = ei.banks.clips.hitSlot(row, col - 1);
+              const outcome = ei.banks.clips.hitSlot(row, sceneId);
               outcome === "NEW_RECORDING" && (padMode.value = "drum");
             }
           } 
@@ -252,12 +265,19 @@ function init() {
   controller.onAction("vertArrows1Up", (act) => act.isOn && ei.banks.moveTrackSelection(-1));
   controller.onAction("vertArrows1Down", (act) => act.isOn && ei.banks.moveTrackSelection(1));
 
+  controller.onAction("vertArrows2Up", (act) => 
+    act.isOn && ei.scheduler.scheduleAll({ time: "measure", action: "un-mute" })
+  );
   controller.onAction("vertArrows2Down", (act) => 
     act.isOn && ei.showSubPanel(ei.showingSubPanel !== "devices" ? "devices" : "noteEditor")
   );
 
   controller.onAction("largeSliderX", (act) => {
-    ei.banks.getTrack("SELECTED").volume().setImmediately(act.value / 127);
+    if (USER_SETTINGS.bigSlider === "volume") {
+      ei.banks.getTrack("SELECTED").volume().setImmediately(act.value / 127);
+    } else {
+      ei.banks.get("SELECTED").endParams.getParameter(8).setImmediately(act.value / 127);
+    }
   })
 
   sliders.forEach((actName, bankNum) => {
@@ -343,7 +363,7 @@ function init() {
       }
       clipPadView.setPadCornerRowCol({
         row: bankNum,
-        col: clipNum + 1
+        col: clipNum + 2
       }, color);
     }
 
@@ -356,21 +376,31 @@ function init() {
       updateClipViewSelected();
     }
 
-  
-
     ei.banks.observeMaxTracksAvailable(() => updateClipView());
-    ei.banks.all.slice(0, 8).forEach((bank, bankNum) => 
+    ei.banks.all.slice(0, 8).forEach((bank, bankNum) => {
       bank.clips.forEach((clip, clipNum) => {
         [clip.hasContent, clip.isPlaying, clip.isRecording].forEach((boolVal) => {
           boolVal().addValueObserver(() => {
             updateClipViewClip(clip, bankNum, clipNum);
           });
         })
+      });
+      bank.track.mute().addValueObserver((muted) => {
+        clipPadView.setPadCornerRowCol({
+          row: bankNum,
+          col: 1,
+        }, {
+          hue: Quneo.ORANGE,
+          value: muted ? 127 : 0
+        })
       })
-    );
+    });
     ei.banks.observeSelectedBankNum(() => updateClipViewSelected());
-    onBeat.observe((onBeat) => blinkCurrentSelection(!onBeat));
+    ei.scheduler.isOnDownBeat.observe((onBeat) => blinkCurrentSelection(!onBeat));
   }
+
+  
+
 
 
   function setupTrackVUMeters() {
@@ -380,15 +410,24 @@ function init() {
       })
     });
     
-    ei.banks.allTracks.forEach((track, bankNum) => {
-      track.volume().addValueObserver(128, (vol) => {
+    ei.banks.all.forEach((bank, bankNum) => {
+      const onValueChange = (vol) => {
         if (ei.banks.selectedBankNum !== bankNum) { return; }
         sliderVUView.setItem("largeSliderX", vol);
-      })
+      };
+      if (USER_SETTINGS.bigSlider === "volume") { 
+        track.volume().addValueObserver(128, onValueChange)
+      } else {
+        bank.endParams.getParameter(8).addValueObserver(128, onValueChange)
+      }
     });
 
     ei.banks.observeSelectedBankNum((bankNum) => {
-      sliderVUView.setItem("largeSliderX", ei.banks.getTrack(bankNum).volume().get() * 127);
+      if (USER_SETTINGS.bigSlider === "volume") {
+        sliderVUView.setItem("largeSliderX", ei.banks.getTrack(bankNum).volume().get() * 127);
+      } else {
+        sliderVUView.setItem("largeSliderX", ei.banks.get(bankNum).endParams.getParameter(8).get() * 127);
+      }
     })
   }
 }

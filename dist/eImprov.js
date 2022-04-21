@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./Banks", "./Observable", "./Tempo"], factory);
+        define(["require", "exports", "./Banks", "./Observable", "./Scheduler", "./SharedStates", "./Tempo"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,6 +12,8 @@
     exports.eI = exports.Params = exports.eImprov = void 0;
     const Banks_1 = require("./Banks");
     const Observable_1 = require("./Observable");
+    const Scheduler_1 = require("./Scheduler");
+    const SharedStates_1 = require("./SharedStates");
     const Tempo_1 = require("./Tempo");
     class eImprov {
         constructor(args) {
@@ -23,18 +25,29 @@
                 tap: new Tempo_1.TempoState()
             };
             this._params = null;
-            this.banks = new Banks_1.Banks(args.banks);
             if (eImprov._singleton) {
                 return eImprov._singleton;
             }
             eImprov._singleton = this;
+            this.banks = new Banks_1.Banks(args.banks);
             this.banks.init();
+            this.vars = new SharedStates_1.SharedState(this.banks);
+            this.vars.init();
+            this.scheduler = new Scheduler_1.Scheduler();
+            this.scheduler.init();
         }
-        undo() { this.app.undo(); }
-        redo() { this.app.redo(); }
+        get schedule() { return this.scheduler.schedule.bind(this.scheduler); }
+        get params() {
+            if (!this._params) {
+                this._params = new Params();
+            }
+            return this._params;
+        }
         get showingSubPanel() {
             return this._showingSubPanel;
         }
+        undo() { this.app.undo(); }
+        redo() { this.app.redo(); }
         showSubPanel(item) {
             item !== "mixer" ? this.app.toggleMixer() : this.app.toggleDevices();
             switch (item) {
@@ -52,12 +65,6 @@
                     break;
             }
             this._showingSubPanel = item;
-        }
-        get params() {
-            if (!this._params) {
-                this._params = new Params();
-            }
-            return this._params;
         }
     }
     exports.eImprov = eImprov;

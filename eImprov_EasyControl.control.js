@@ -246,7 +246,7 @@ function init() {
       if (!act.tapped()) { return; }
       ei.banks.clips.transpose({ 
         bankId: "SELECTED", 
-        sceneId: "PLAYING",
+        sceneId: "PLAYING_OR_SELECTED",
         steps: name === "progBtn1" ? -12 : 12
       })
     })
