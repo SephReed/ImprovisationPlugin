@@ -347,18 +347,27 @@ export class Banks {
     })
   }
 
-  public endAllRecordings() {
-    let oneEnded = false;
+  public endAllRecordings(next: "play" | "stop" = "play") {
+    let result = false;
     this.clips.all.forEach((clip) => {
       if (clip.isRecording().get()) {
-        oneEnded = true;
-        clip.launch();
+        result = true;
+        if (next == "play") {
+          clip.launch();
+        } else {
+          const coord = this.clips.getClipSlotCoordinates(clip);
+          if (coord == "NOT_FOUND") {
+            console.warn("Unable to find clip")
+          } else {
+            this.stop(coord.bankId)
+          }
+        }
         clip.select();
 
         const nextUp = this.nextRecordingBankNum;
         nextUp !== undefined && this.queueRecordInNextEmptySlot(nextUp);
       }
     });
-    return oneEnded;
+    return result;
   }
 }

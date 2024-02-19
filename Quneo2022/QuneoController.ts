@@ -123,7 +123,7 @@ const controllerDef: eIControllerArgs<QuneoActionArgs> = {
     in: 1,
     out: 1,
   },
-  portNames: ["QUNEO"],
+  portNames: ["QUNEOennae"],
   actions: {
     ...controllerActions,
 

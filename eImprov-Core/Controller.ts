@@ -363,7 +363,7 @@ class ControllerAction {
       const oldCb = cb;
       cb = (act) => {
         const midi = act.currentState;
-        if (midi && this.filter.matchesMidiNote(midi)) {
+        if (midi && MidiFilter.from(filter).matchesMidiNote(midi)) {
           oldCb(act);
         }
       }

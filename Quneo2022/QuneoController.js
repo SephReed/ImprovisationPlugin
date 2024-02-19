@@ -84,7 +84,7 @@
             in: 1,
             out: 1,
         },
-        portNames: ["QUNEO"],
+        portNames: ["QUNEOennae"],
         actions: Object.assign(Object.assign({}, controllerActions), (() => {
             const gridItems = {};
             for (let i = 0; i < 16; i++) {

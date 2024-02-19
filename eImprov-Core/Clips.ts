@@ -155,7 +155,7 @@ export class Clips {
     const clipRecEndObserver = (isRec: boolean) => {
       if (isRec) { return; }
       const nextUp = this.banks.nextRecordingBankNum;
-      if (nextUp === undefined || nextUp < 0) { return; }
+      if (nextUp === undefined || nextUp as number < 0) { return; }
       this.banks.nextRecordingBankNum = undefined;
       this.banks.select(nextUp);
     }
@@ -232,6 +232,19 @@ export class Clips {
       return undefined;
     }
     return this.banks.getTrack(bankNum).clipLauncherSlotBank().getItemAt(sceneNum);
+  }
+
+  public getClipSlotCoordinates(clipSlot: API.ClipLauncherSlot): ClipCoordinate | "NOT_FOUND" {
+    let bankId = -1; 
+    let sceneId = -1;;
+    const found = this.banks.all.some((bank, index) => {
+      sceneId = bank.clips.indexOf(clipSlot);
+      if (sceneId > -1) {
+        bankId = index;
+        return true;
+      }
+    })
+    return found ? { bankId, sceneId } : "NOT_FOUND";
   }
 
   public getPlayingSlot(bankId: BankId) {
