@@ -40,6 +40,7 @@ export declare class Clips {
     };
     getSlot(clipCoord: ClipCoordinate): API.ClipLauncherSlot | undefined;
     getSlot(bankId: BankId, sceneId: SceneId): API.ClipLauncherSlot | undefined;
+    getClipSlotCoordinates(clipSlot: API.ClipLauncherSlot): ClipCoordinate | "NOT_FOUND";
     getPlayingSlot(bankId: BankId): API.ClipLauncherSlot | undefined;
     getNextEmptySlot(bankId: BankId): API.ClipLauncherSlot | undefined;
     hitSlot(bankId: BankId, sceneId: SceneId): "LAUNCH" | "NEW_RECORDING" | undefined;

@@ -162,7 +162,11 @@ function init() {
 
   controller.onAction("stop", (act) => {
     if (act.tapped()) {
-      ei.banks.stop("SELECTED");
+      if (ei.banks.isRecording) {
+        ei.banks.endAllRecordings("stop");
+      } else {
+        ei.banks.stop("SELECTED");
+      }
     }
   });
 
@@ -212,8 +216,6 @@ function init() {
       return true;
     }
 
-    // ei.banks.endAllRecordings("play");
-
     // const transposeDown = controller.action("progBtn1");
     // if (transposeDown.isOn) {
     //   ei.banks.clips.transpose({
@@ -241,9 +243,9 @@ function init() {
   REC_BUTTONS.forEach((name, index) => {
     controller.onActionNonZero(name, (act) => {
       println(name + "REC" + act.value);
-      // if (tryConsumeBankCombo(index)) {
-      //   return;
-      // }
+      if (tryConsumeBankCombo(index)) {
+        return;
+      }
       
       if (ei.banks.selectedBankNum === index) {
         ei.banks.hitRecordButton();

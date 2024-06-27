@@ -60,5 +60,5 @@ export declare class Banks {
     hitRecordButton(): void;
     queueRecordInNextEmptySlot(bankId: BankId): void;
     redoRecordingClips(): void;
-    endAllRecordings(): boolean;
+    endAllRecordings(next?: "play" | "stop"): boolean;
 }

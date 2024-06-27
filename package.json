@@ -4,6 +4,7 @@
   "description": "",
   "main": "eImprov_12Step.control.js",
   "scripts": {
+    "buildCore": "tsc",
     "build": "tsc; tsc --project ./Quneo2022/tsconfig.quneo.json --watch"
   },
   "repository": {

@@ -194,6 +194,19 @@
             }
             return this.banks.getTrack(bankNum).clipLauncherSlotBank().getItemAt(sceneNum);
         }
+        getClipSlotCoordinates(clipSlot) {
+            let bankId = -1;
+            let sceneId = -1;
+            ;
+            const found = this.banks.all.some((bank, index) => {
+                sceneId = bank.clips.indexOf(clipSlot);
+                if (sceneId > -1) {
+                    bankId = index;
+                    return true;
+                }
+            });
+            return found ? { bankId, sceneId } : "NOT_FOUND";
+        }
         getPlayingSlot(bankId) {
             return this.getSlot(bankId, "PLAYING");
         }
