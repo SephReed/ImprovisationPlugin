@@ -1,7 +1,7 @@
 /// <reference types="typed-bitwig-api" />
 import { MidiNote, StatusType } from "./MidiNote";
 import { Painting, PaintingArgs, PixelChangeListener } from "./Painting";
-export declare type RawMidiFilter = {
+export type RawMidiFilter = {
     channel?: number;
     value?: number | "non-zero";
 } & ({
@@ -108,6 +108,13 @@ declare class ControllerAction {
     get value(): number | undefined;
     protected updateListeners: Array<((act: ControllerAction) => void)>;
     onUpdate(cb: (act: ControllerAction) => void, filter?: MidiFilter | RawMidiFilter): void;
+    onTap(cb: (act: ControllerAction) => void, args?: {
+        nTimes: number;
+    }): void;
+    protected tapWaitTimeout: number;
+    onHold(cb: (act: ControllerAction) => void, args?: {
+        time: number;
+    }): void;
     tapped(args?: {
         nTimes: number;
     }): boolean;

@@ -52,7 +52,12 @@ export class Observable<T> {
 
   public ignoreRepeatValues: boolean = true;
 
-  public get value() { return this.currentVal; }
+  public get value() { 
+    if (this.observers === undefined) {  
+      throw "ERR: init() must be called in driver installation";
+    }
+    return this.currentVal; 
+  }
   public set value(newVal: T) {
     if (this.ignoreRepeatValues && this.currentVal === newVal) { return; }
     this.forceSet(newVal);

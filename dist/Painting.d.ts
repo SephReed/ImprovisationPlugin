@@ -1,6 +1,6 @@
-export declare type PixelChangeListener<LOC, VAL> = (changes: PixelValue<LOC, VAL>[]) => any;
-export declare type PixelValue<LOC, VAL> = [LOC, VAL | "unset"];
-export declare type PaintingArgs<LOC> = {
+export type PixelChangeListener<LOC, VAL> = (changes: PixelValue<LOC, VAL>[]) => any;
+export type PixelValue<LOC, VAL> = [LOC, VAL | "unset"];
+export type PaintingArgs<LOC> = {
     toId?: (loc: LOC) => string | number;
 };
 export declare class Painting<LOC, VAL> {

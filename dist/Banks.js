@@ -16,15 +16,6 @@
     const SharedStates_1 = require("./SharedStates");
     ;
     class Banks {
-        constructor(args) {
-            this.args = args;
-            this.liveBanks = [];
-            this._selectedBankNum = new Observable_1.Observable({ value: 0 });
-            this._maxTracksAvailable = new Observable_1.Observable({ value: 0 });
-            // public readonly vars = new SharedState(this);
-            this.clips = new Clips_1.Clips(this);
-            this._assertScroll = false;
-        }
         get selectedBankNum() {
             return this._selectedBankNum.value;
         }
@@ -37,6 +28,15 @@
         }
         get observeMaxTracksAvailable() {
             return this._maxTracksAvailable.observe.bind(this._maxTracksAvailable);
+        }
+        constructor(args) {
+            this.args = args;
+            this.liveBanks = [];
+            this._selectedBankNum = new Observable_1.Observable({ value: 0 });
+            this._maxTracksAvailable = new Observable_1.Observable({ value: 0 });
+            // public readonly vars = new SharedState(this);
+            this.clips = new Clips_1.Clips(this);
+            this._assertScroll = false;
         }
         assertScroll() {
             if (this._assertScroll) {
@@ -81,6 +81,7 @@
         }
         get nextRecordingBankNum() {
             const out = (0, eImprov_1.eI)().vars.get("MASTER", SharedStates_1.SHARED_STATE.nextRecord);
+            println("nextRecordingBankNu:m" + JSON.stringify(out));
             return out && out.value ? parseInt(out.value) : undefined;
         }
         set nextRecordingBankNum(bankId) {

@@ -107,6 +107,7 @@ export class Banks {
 
   public get nextRecordingBankNum() {
     const out = eI().vars.get("MASTER", SHARED_STATE.nextRecord);
+    println("nextRecordingBankNu:m" + JSON.stringify(out));
     return out && out.value ? parseInt(out.value) : undefined;
   }
 

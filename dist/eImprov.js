@@ -16,6 +16,7 @@
     const SharedStates_1 = require("./SharedStates");
     const Tempo_1 = require("./Tempo");
     class eImprov {
+        get schedule() { return this.scheduler.schedule.bind(this.scheduler); }
         constructor(args) {
             this.args = args;
             // -------------
@@ -36,7 +37,6 @@
             this.scheduler = new Scheduler_1.Scheduler();
             this.scheduler.init();
         }
-        get schedule() { return this.scheduler.schedule.bind(this.scheduler); }
         get params() {
             if (!this._params) {
                 this._params = new Params();
@@ -73,6 +73,7 @@
             this.tempo = new Observable_1.Observable({ param: eI().transport.tempo() });
             this.isPlaying = new Observable_1.Observable({ param: eI().transport.isPlaying() });
             this.playPos = new Observable_1.Observable({ param: eI().transport.getPosition() });
+            this.fillMode = new Observable_1.Observable({ param: eI().transport.isFillModeActive() });
         }
     }
     exports.Params = Params;

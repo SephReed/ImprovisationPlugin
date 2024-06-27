@@ -8,7 +8,7 @@ export declare const statusBytes: {
     readonly pitchBend: 224;
     readonly system: 240;
 };
-export declare type StatusType = keyof typeof statusBytes;
+export type StatusType = keyof typeof statusBytes;
 export declare class MidiNote {
     statData: number;
     data1: number;

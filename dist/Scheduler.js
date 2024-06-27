@@ -17,6 +17,8 @@
         constructor() {
             this.isOnDownBeat = new Observable_1.Observable({ value: false });
             this.isAtMeasureStart = new Observable_1.Observable({ value: false });
+            this.timeoutListeners = new Map();
+            this.timeoutID = 0;
         }
         init() {
             (0, eImprov_1.eI)().transport.getPosition().addValueObserver((pos) => {
@@ -28,6 +30,12 @@
                 if (!atStart || prevValue === atStart) {
                     return;
                 }
+                this.timeoutListeners.forEach(({ targetPos, cb }, id) => {
+                    if (pos >= targetPos || (pos - targetPos < 50)) {
+                        this.timeoutListeners.delete(id);
+                        cb();
+                    }
+                });
                 // const timeTill = 
                 println("measureStart " + JSON.stringify((0, eImprov_1.eI)().vars.entries()));
                 (0, eImprov_1.eI)().vars.entries().forEach(([bankNum, vars]) => {
@@ -78,6 +86,17 @@
             (0, eImprov_1.eI)().banks.all.forEach((bank, bankId) => {
                 this.schedule(Object.assign(Object.assign({}, args), { bankId }));
             });
+        }
+        setTimeout(cb, ms) {
+            const { playPos, tempo } = (0, eImprov_1.eI)().params;
+            let targetPos = playPos.value + (ms / ((60 * 1000) / tempo.value));
+            println("t:" + targetPos + "pp:" + playPos.value + "tempo" + tempo.value);
+            const id = this.timeoutID++;
+            this.timeoutListeners.set(id, { targetPos, cb });
+            return id;
+        }
+        clearTimeout(id) {
+            this.timeoutListeners.delete(id);
         }
     }
     exports.Scheduler = Scheduler;

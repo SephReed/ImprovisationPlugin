@@ -28,17 +28,17 @@
     //   return statusBytes
     // }
     class MidiNote {
-        constructor(statData, data1, data2) {
-            this.statData = statData;
-            this.data1 = data1;
-            this.data2 = data2;
-            this.statusMap = new Map();
-        }
         static cleanData(stat, data1, data2) {
             const limit = (val, limit = 127) => Math.max(0, Math.min(limit, Math.floor(val)));
             const out = [limit(stat, 255), limit(data1), limit(data2)];
             // println(out.join());
             return out;
+        }
+        constructor(statData, data1, data2) {
+            this.statData = statData;
+            this.data1 = data1;
+            this.data2 = data2;
+            this.statusMap = new Map();
         }
         get status() {
             const statusOnly = this.statData >> 4;

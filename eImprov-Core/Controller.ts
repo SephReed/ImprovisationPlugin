@@ -1,5 +1,6 @@
 import { MidiNote, statusBytes, StatusType } from "./MidiNote";
 import { Painting, PaintingArgs, PixelChangeListener } from "./Painting";
+import { eI } from "./eImprov";
 
 
 
@@ -369,6 +370,39 @@ class ControllerAction {
       }
     }
     this.updateListeners.push(cb);
+  }
+
+  public onTap(
+    cb: (act: ControllerAction) => void,
+    args: { nTimes: number } = { nTimes: 1 },
+  ) {
+    this.onUpdate((act) => {
+      if (act.tapped(args)) {
+        cb(act);
+      }
+    })
+  }
+
+  protected tapWaitTimeout: number = 0;
+  public onHold(
+    cb: (act: ControllerAction) => void,
+    args: { time: number } = { time: ControllerAction.MAX_TAP_TIME },
+  ) {
+    this.onUpdate((act) => {
+      if (act.isOff) { 
+        if (this.tapWaitTimeout){
+          eI().scheduler.clearTimeout(this.tapWaitTimeout);
+        } else {
+          cb(act);
+        }
+        return; 
+      }
+      this.tapWaitTimeout = eI().scheduler.setTimeout(() => {
+        println("timeout over");
+        this.tapWaitTimeout = 0;
+        cb(act);
+      }, args.time)
+    })
   }
 
   public tapped(args: { nTimes: number } = { nTimes: 1 }) {

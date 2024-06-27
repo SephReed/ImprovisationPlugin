@@ -13,6 +13,7 @@ export class Scheduler {
 
   public readonly isOnDownBeat = new Observable({value: false});
   public readonly isAtMeasureStart = new Observable({value: false});
+  public readonly timeoutListeners: Map<number, { targetPos: number; cb: () => any }> = new Map();
 
   public init() {
     eI().transport.getPosition().addValueObserver((pos) => {
@@ -25,6 +26,14 @@ export class Scheduler {
       if (!atStart || prevValue === atStart) {
         return;
       }
+
+      this.timeoutListeners.forEach(({ targetPos, cb }, id) => {
+        if (pos >= targetPos || (pos - targetPos < 50)) {
+          this.timeoutListeners.delete(id);
+          cb();
+        }
+      })
+
       // const timeTill = 
       println("measureStart " + JSON.stringify(eI().vars.entries()));
       eI().vars.entries().forEach(([bankNum, vars]) => {
@@ -83,5 +92,19 @@ export class Scheduler {
         bankId
       });
     })
+  }
+
+  protected timeoutID = 0;
+  public setTimeout(cb: () => any, ms: number): number {
+    const {playPos, tempo} = eI().params;
+    let targetPos = playPos.value + (ms / ((60 * 1000)/tempo.value))
+    println("t:" + targetPos + "pp:" + playPos.value + "tempo" +tempo.value);
+    const id = this.timeoutID++;
+    this.timeoutListeners.set(id, {targetPos, cb});
+    return id;
+  }
+
+  public clearTimeout(id:number) {
+    this.timeoutListeners.delete(id);
   }
 }

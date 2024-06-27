@@ -49,7 +49,12 @@
                 this.init();
             }
         }
-        get value() { return this.currentVal; }
+        get value() {
+            if (this.observers === undefined) {
+                throw "ERR: init() must be called in driver installation";
+            }
+            return this.currentVal;
+        }
         set value(newVal) {
             if (this.ignoreRepeatValues && this.currentVal === newVal) {
                 return;

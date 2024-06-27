@@ -2,12 +2,12 @@
 import { BankId, Banks, SceneId } from "./Banks";
 import { Observable } from "./Observable";
 import { PolyfilledCursorClip } from "./TypePolyfills";
-export declare type ClipCoordinate = {
+export type ClipCoordinate = {
     bankId: BankId;
     sceneId: SceneId;
 };
-export declare type ReRecMode = "LOOP_LAYER" | "LOOP_EXTEND" | "NO_LOOP";
-export declare type SomeAreMode = "recording" | "rec-queued" | "rec-or-queued";
+export type ReRecMode = "LOOP_LAYER" | "LOOP_EXTEND" | "NO_LOOP";
+export type SomeAreMode = "recording" | "rec-queued" | "rec-or-queued";
 export declare class Clips {
     protected banks: Banks;
     protected cursor: PolyfilledCursorClip;

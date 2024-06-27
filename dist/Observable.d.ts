@@ -1,14 +1,14 @@
 /// <reference types="typed-bitwig-api" />
-export declare type ObservableNeededFns<T> = {
+export type ObservableNeededFns<T> = {
     listener: (cb: Observer<T>) => void;
     set: (val: T) => void;
 };
-export declare type ObservableArgs<T> = ObservableNeededFns<T> | {
+export type ObservableArgs<T> = ObservableNeededFns<T> | {
     param: API.Parameter | API.SettableBooleanValue | API.SettableBeatTimeValue;
 } | {
     value: T;
 };
-export declare type Observer<T> = (val: T) => void;
+export type Observer<T> = (val: T) => void;
 export declare class Observable<T> {
     protected args: ObservableArgs<T>;
     protected observers?: Array<Observer<T>>;

@@ -105,8 +105,11 @@ function init() {
     action && println(action.name);
     println(midi.status + midi.channel + " " + midi.data1 + " " + midi.data2);
   });
-  const { isPlaying } = ei.params;
+  const { isPlaying, fillMode, playPos, tempo } = ei.params;
   isPlaying.init();
+  fillMode.init();
+  playPos.init();
+  tempo.init(); 
 
 
   const REC_BUTTONS = ["recBtn1", "recBtn2", "recBtn3", "recBtn4", "recBtn5", "recBtn6", "recBtn7", "recBtn8"];
@@ -187,7 +190,8 @@ function init() {
     // }
   });
 
-  controller.onActionNonZero("rec", (act) => {
+  controller.onAction("rec", (act) => {
+
     if (act.tapped()) {
       if (ei.banks.isRecording) { 
         ei.banks.redoRecordingClips();
@@ -197,9 +201,31 @@ function init() {
     }
   });
 
+
+  controller.action("cycle").onTap((act) => {
+    fillMode.value = !fillMode.value;
+  })
+  controller.action("cycle").onHold((act) => {
+    println(act.isOn);  
+    fillMode.value = act.isOn;   
+  });
+
+  ["markerLeft", "markerRight"].forEach((name) => controller.onAction(name, (act) => {
+    if (act.tapped()) { 
+      const steps = act.name === "markerLeft" ? -12 : 12;
+      ei.banks.clips.transpose({ steps, bankId: "SELECTED", sceneId: "SELECTED"});
+    }
+  }))
+
   function tryConsumeBankCombo(bankNum) {
     const playBtn = controller.action("play");
     if (playBtn.isOn) {
+      ei.banks.clips.hitSlot(bankNum, "LAST_CONTENT")
+      return true;
+    }
+
+    const recBtn = controller.action("rec");
+    if (recBtn.isOn) {
       ei.banks.clips.hitSlot("SELECTED", bankNum);
       return true;
     }
@@ -216,25 +242,25 @@ function init() {
       return true;
     }
 
-    // const transposeDown = controller.action("progBtn1");
-    // if (transposeDown.isOn) {
-    //   ei.banks.clips.transpose({
-    //     bankId: "SELECTED",
-    //     sceneId: index,
-    //     steps: -12
-    //   });
-    //   return;
-    // }
+    const transposeDown = controller.action("markerLeft");
+    if (transposeDown.isOn) {
+      ei.banks.clips.transpose({
+        bankId: "SELECTED",
+        sceneId: bankNum,
+        steps: -12
+      });
+      return;
+    }
 
-    // const transposeUp = controller.action("progBtn2");
-    // if (transposeUp.isOn) {
-    //   ei.banks.clips.transpose({
-    //     bankId: "SELECTED",
-    //     sceneId: index,
-    //     steps: 12
-    //   });
-    //   return;
-    // }
+    const transposeUp = controller.action("markerRight");
+    if (transposeUp.isOn) {
+      ei.banks.clips.transpose({
+        bankId: "SELECTED",
+        sceneId: bankNum,
+        steps: 12
+      });
+      return;
+    }
     return false;
   }
 

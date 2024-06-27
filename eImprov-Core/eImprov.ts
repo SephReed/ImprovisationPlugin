@@ -74,6 +74,7 @@ export class Params {
   public tempo = new Observable<number>({ param: eI().transport.tempo() });
   public isPlaying = new Observable<number>({ param: eI().transport.isPlaying() });
   public playPos = new Observable<number>({ param: eI().transport.getPosition() });
+  public fillMode = new Observable<boolean>({ param: eI().transport.isFillModeActive() });
 }
 
 export function eI() {

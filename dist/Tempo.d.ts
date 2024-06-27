@@ -1,4 +1,4 @@
-export declare type TempoListener = (state: TempoState) => void;
+export type TempoListener = (state: TempoState) => void;
 export interface Impulse {
     time: number;
     absBeat?: number;

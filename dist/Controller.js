@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./MidiNote", "./Painting"], factory);
+        define(["require", "exports", "./MidiNote", "./Painting", "./eImprov"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,7 +12,16 @@
     exports.eIController = exports.ControllerPainting = exports.MidiFilter = void 0;
     const MidiNote_1 = require("./MidiNote");
     const Painting_1 = require("./Painting");
+    const eImprov_1 = require("./eImprov");
     class MidiFilter {
+        static from(arg) {
+            return arg instanceof MidiFilter ? arg : new MidiFilter(arg);
+        }
+        get channel() { return this.args.channel; }
+        get value() { return this.args.value; }
+        get statusByte() {
+            return MidiNote_1.statusBytes[(!this.status || this.status === "note") ? "noteOn" : this.status];
+        }
         constructor(args) {
             this.args = args;
             if ("status" in args) {
@@ -27,14 +36,6 @@
                 this.status = "cc";
                 this.index = args.cc;
             }
-        }
-        static from(arg) {
-            return arg instanceof MidiFilter ? arg : new MidiFilter(arg);
-        }
-        get channel() { return this.args.channel; }
-        get value() { return this.args.value; }
-        get statusByte() {
-            return MidiNote_1.statusBytes[(!this.status || this.status === "note") ? "noteOn" : this.status];
         }
         toMididNote() {
             const { statusByte, channel, index, value } = this;
@@ -197,6 +198,7 @@
             this.name = name;
             this.history = [];
             this.updateListeners = [];
+            this.tapWaitTimeout = 0;
             this.filter = MidiFilter.from(_filter);
         }
         matchesMidi(midi) {
@@ -255,6 +257,31 @@
                 };
             }
             this.updateListeners.push(cb);
+        }
+        onTap(cb, args = { nTimes: 1 }) {
+            this.onUpdate((act) => {
+                if (act.tapped(args)) {
+                    cb(act);
+                }
+            });
+        }
+        onHold(cb, args = { time: ControllerAction.MAX_TAP_TIME }) {
+            this.onUpdate((act) => {
+                if (act.isOff) {
+                    if (this.tapWaitTimeout) {
+                        (0, eImprov_1.eI)().scheduler.clearTimeout(this.tapWaitTimeout);
+                    }
+                    else {
+                        cb(act);
+                    }
+                    return;
+                }
+                this.tapWaitTimeout = (0, eImprov_1.eI)().scheduler.setTimeout(() => {
+                    println("timeout over");
+                    this.tapWaitTimeout = 0;
+                    cb(act);
+                }, args.time);
+            });
         }
         tapped(args = { nTimes: 1 }) {
             if (this.isOn) {

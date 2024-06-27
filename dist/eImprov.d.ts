@@ -4,7 +4,7 @@ import { Observable } from "./Observable";
 import { Scheduler } from "./Scheduler";
 import { SharedState } from "./SharedStates";
 import { TempoState } from "./Tempo";
-export declare type SubPanel = "devices" | "noteEditor" | "mixer" | "automation";
+export type SubPanel = "devices" | "noteEditor" | "mixer" | "automation";
 export declare class eImprov {
     protected args: {
         banks: BanksArgs;
@@ -39,5 +39,6 @@ export declare class Params {
     tempo: Observable<number>;
     isPlaying: Observable<number>;
     playPos: Observable<number>;
+    fillMode: Observable<boolean>;
 }
 export declare function eI(): eImprov;

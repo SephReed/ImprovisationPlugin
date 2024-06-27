@@ -6,9 +6,9 @@ export interface BanksArgs {
     width: number;
     sends: number;
 }
-export declare type BankId = number | "SELECTED" | "MASTER";
-export declare type SceneId = number | "SELECTED" | "PLAY_QUEUED" | "PLAYING" | "RECORDING" | "RECORDING_QUEUED" | "STOP_QUEUED" | "FIRST_OPEN" | "PLAYING_OR_SELECTED" | "LAST_CONTENT" | "FIRST_CONTENT";
-export declare type eIBankDecorators = {
+export type BankId = number | "SELECTED" | "MASTER";
+export type SceneId = number | "SELECTED" | "PLAY_QUEUED" | "PLAYING" | "RECORDING" | "RECORDING_QUEUED" | "STOP_QUEUED" | "FIRST_OPEN" | "PLAYING_OR_SELECTED" | "LAST_CONTENT" | "FIRST_CONTENT";
+export type eIBankDecorators = {
     track: API.Track;
     isSelected: boolean;
     params: API.CursorRemoteControlsPage;
@@ -17,7 +17,7 @@ export declare type eIBankDecorators = {
     select(): void;
     clips: API.ClipLauncherSlot[];
 };
-export declare type eIBank = API.TrackBank & eIBankDecorators;
+export type eIBank = API.TrackBank & eIBankDecorators;
 export declare class Banks {
     protected args: BanksArgs;
     protected liveBanks: Array<eIBank>;
